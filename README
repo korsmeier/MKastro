@@ -1,0 +1,45 @@
+**************
+*  MK astro  *
+**************
+
+
+This software is a collection of python modules to transform and calculate
+common quantities in (cosmic-ray) astroparticle physics.
+
+To install this sofware do the following.
+
+**********************
+* Required software: *
+**********************
+
+- python 2 or
+- python 3
+
+If you install the python package make sure your python version
+contains the following packages:
+   * numpy
+   * scipy
+   * matplotlib
+
+
+If you want to link the python package to your site path use the
+script
+
+$ ./link_python_package.sh
+
+and follow the instruction. You have to specify your site path manuelly.
+To find out your path you may need the command ($ python -m site).
+
+If you do not want to link the package to your python version you have
+to create a symbolic link of the py2 or py3 directory in the directory 
+where you want to use the package. 
+
+$ ln -s PATH_TO_CRXS/py2 MKastro
+
+To include the package use
+
+import MKastro.basic.Constants.py
+import MKastro.basic.PlotFunctions.py
+import MKastro.basic.Transformation.py
+
+
