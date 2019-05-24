@@ -14,6 +14,14 @@ c = {'m/s':299792458., 'kpc/My':306.3915}
 m_proton  = {'GeV':0.93827, 'MeV':938.27}
 m_neutron = {'GeV':0.93827, 'MeV':938.27}
 
+# Cosmology
+
+# Cosmology_Planck2015
+Omega_M = 0.315
+Omega_R = 1e-4
+H_0     = {  'km/s/Mpc': 67.3 }
+
+
 Z_dictionary = {1:'proton',
                 2:'helium',
                 3:'lithium',
@@ -40,10 +48,19 @@ length = {
     'cm->kpc': 3.24078e-22,
      'm->kpc': 3.24078e-20,
     'km->kpc': 3.24078e-17,
+    
+    'cm->Mpc': 3.24078e-25,
+     'm->Mpc': 3.24078e-23,
+    'km->Mpc': 3.24078e-20,
 
     'cm->pc' : 3.24078e-19,
      'm->pc' : 3.24078e-17,
     'km->pc' : 3.24078e-14,
+    
+    
+    'Mpc->cm': 3.086e+24,
+    'Mpc->m' : 3.086e+22,
+    'Mpc->km': 3.086e+19,
 
     'kpc->cm': 3.086e+21,
     'kpc->m' : 3.086e+19,
