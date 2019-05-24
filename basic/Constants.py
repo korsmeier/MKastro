@@ -73,12 +73,22 @@ time  = {
     'My->s' : 3.154e+13
 }
 
+energy  = {
+    'GeV->TeV': 1e-3,
+    'TeV->GeV': 1e3,
+    'GeV->MeV': 1e3,
+    'MeV->GeV': 1e-3
+
+}
+
 diffusion_constant = {
     'cm^2/s->kpc^2/My': length['cm->kpc']**2/time['s->My'],
     'kpc^2/My->cm^2/s': length['kpc->cm']**2/time['My->s']
 }
 
 flux = {
+    'MeV^-1cm^-2->GeV^-1m^-2': 1./length['cm->m']**2/energy['MeV->GeV'],
+    'GeV^-1m^-2->MeV^-1cm^-2': 1./length['m->cm']**2/energy['GeV->MeV'],
     'kpc^-2My^-1->m^-2s^-1': 1./length['kpc->m']**2/time['My->s'],
     'm^-2s^-1->kpc^-2My^-1': 1./length['m->kpc']**2/time['s->My']
 }
@@ -86,11 +96,11 @@ flux = {
 XS ={
     'b->m^2'   : 1e-28,
     'mb->m^2'  : 1e-31,
-    'b->cm^2'  : 1e-23,
-    'mb->cm^2' : 1e-25,
+    'b->cm^2'  : 1e-24,
+    'mb->cm^2' : 1e-27,
 
     'm^2->b'   : 1e28,
     'm^2->mb'  : 1e31,
-    'cm^2->b'  : 1e23,
-    'cm^2->mb' : 1e25,
+    'cm^2->b'  : 1e24,
+    'cm^2->mb' : 1e27,
 }

@@ -75,3 +75,16 @@ def new_plot_res( xlabel='', ylabel='', xscale='log', yscale='log', print_size=1
     
     return plot_main, plot_res, fig
 
+
+
+
+#colors      = ['#C0392B','#E74C3C','#9B59B6','#8E44AD','#2980B9','#3498DB','#1ABC9C','#16A085','#27AE60','#2ECC71','#F1C40F','#F39C12','#D35400','#95A5A6','#7F8C8D','#34495E','#2C3E50']
+colors      = ['#C0392B','#E74C3C','#9B59B6','#8E44AD','#2980B9','#3498DB','#1ABC9C','#16A085','#196F3D','#1D8348','#F1C40F','#F39C12','#D35400','#95A5A6','#7F8C8D','#34495E','#2C3E50']
+colors_dark = ['#7B241C','#943126','#633974','#5B2C6F','#1A5276','#21618C','#117864','#0E6655','#196F3D','#1D8348','#9A7D0A','#9C640C','#873600','#5F6A6A','#515A5A','#212F3C','#1C2833']
+
+cmap_rainbow = mpl.cm.get_cmap('jet')
+
+dashes      = [  (), (2,2), (5,3), (7,2,2,2)   ]
+
+markers     = [  'o','v','^', 's', 'd', '<', '>', 'P', 'X' ]
+
