@@ -21,14 +21,17 @@ f.close()
 
 string_columns = ['Fermi name', 'Counterpart name', 'Bzcat5 name', 'Optical Class', 'Spectral Type', 'SED Class', 'Radio flag', 'CLEAN']
 
+def n():
+    return row
+
 def get( observable, row=-1  ):
+    if not observable in dictionary:
+        print('3LAC does not contain %s.' % observable )
+        return None
     col = dictionary.index(observable)
     is_string = False
     if observable in string_columns:
         is_string = True
-    if col<0:
-        print('3LAC does not contain %s.' % observable )
-        return None
     if row<0:
         if is_string:
             return data_3LAC_string[:, col]
@@ -48,14 +51,15 @@ def print_columns():
 def columns():
     return dictionary
 
-col_ra  = col = dictionary.index('RA (J2000.0)')
-col_dec = col = dictionary.index('Dec (J2000.0)')
+col_ra  = dictionary.index('RA (J2000.0)' )
+col_dec = dictionary.index('Dec (J2000.0)')
 def find_source( ra, dec, min_separation=0.1 ):
     global col_ra, col_dec
     _ra  = data_3LAC_num[:,col_ra ]
     _dec = data_3LAC_num[:,col_dec]
     d2 = (ra - _ra)**2 + (dec - _dec)**2
-    i = argmin(d2)
-    if np.sqrt(d2)<min_separation:
+    i = np.argmin(d2)
+    if np.sqrt(d2[i])<min_separation:
         return i
     return -1
+
