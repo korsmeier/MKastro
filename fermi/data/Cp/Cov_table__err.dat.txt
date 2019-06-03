@@ -1,0 +1,26 @@
+#
+#   Cp, autocorrelation of the unresoved gamma-ray flux - Correlation matrix of various energy bins
+#
+#       Phys. Rev. Lett. 121, 241101 (2018)
+#       Unresolved Gamma-Ray Sky through its Angular Power Spectrum
+#       M. Ackermann, et al.
+#
+#
+#       Matrix from Tab. VII (Supplemental Material)
+#
+#
+#
+#   Uncertainty of the correlation matrix of various (covariance matrix: Cov_table.dat.txt, energy bins: Cov_table__Ebins.dat.txt)
+#
+1.5e-18    4.5e-19    2.3e-19    1.7e-19    1.1e-19    6.6e-20    4.0e-20    3.0e-20    1.9e-20    1.2e-20    8.0e-21    3.3e-21
+4.5e-19    1.6e-19    5.6e-20    3.9e-20    2.5e-20    1.5e-20    9.6e-21    7.1e-21    4.5e-21    2.7e-21    1.9e-21    7.4e-22
+2.3e-19    5.6e-20    1.8e-20    9.5e-21    5.8e-21    3.6e-21    2.2e-21    1.6e-21    1.0e-21    6.3e-22    4.4e-22    1.8e-22
+1.7e-19    3.9e-20    9.5e-21    6.3e-21    3.2e-21    1.9e-21    1.1e-21    8.4e-22    5.3e-22    3.3e-22    2.2e-22    9.3e-23
+1.1e-19    2.5e-20    5.8e-21    3.2e-21    1.8e-21    9.6e-22    5.6e-22    4.0e-22    2.5e-22    1.6e-22    1.1e-22    4.3e-23
+6.6e-20    1.5e-20    3.6e-21    1.9e-21    9.6e-22    6.1e-22    3.2e-22    2.3e-22    1.4e-22    8.7e-23    6.2e-23    2.4e-23
+4.0e-20    9.6e-21    2.2e-21    1.1e-21    5.6e-22    3.2e-22    2.1e-22    1.3e-22    8.1e-23    5.0e-23    3.5e-23    1.4e-23
+3.0e-20    7.1e-21    1.6e-21    8.4e-22    4.0e-22    2.3e-22    1.3e-22    1.0e-22    5.8e-23    3.6e-23    2.5e-23    9.9e-24
+1.9e-20    4.5e-21    1.0e-21    5.3e-22    2.5e-22    1.4e-22    8.1e-23    5.8e-23    4.0e-23    2.2e-23    1.6e-23    6.1e-24
+1.2e-20    2.7e-21    6.3e-22    3.3e-22    1.6e-22    8.7e-23    5.0e-23    3.6e-23    2.2e-23    1.5e-23    9.7e-24    3.8e-24
+8.0e-21    1.9e-21    4.4e-22    2.2e-22    1.1e-22    6.2e-23    3.5e-23    2.5e-23    1.6e-23    9.7e-24    7.3e-24    2.7e-24
+3.3e-21    7.4e-22    1.8e-22    9.3e-23    4.3e-23    2.4e-23    1.4e-23    9.9e-24    6.1e-24    3.8e-24    2.7e-24    1.1e-24

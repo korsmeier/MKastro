@@ -1,0 +1,27 @@
+#
+#   Cp, autocorrelation of the unresoved gamma-ray flux - Correlation matrix of various energy bins
+#
+#       Phys. Rev. Lett. 121, 241101 (2018)
+#       Unresolved Gamma-Ray Sky through its Angular Power Spectrum
+#       M. Ackermann, et al.
+#
+#
+#       Matrix from Tab. VII (Supplemental Material)
+#
+#
+#
+#   Energy bins of the correlation matrix of various (covariance matrix: Cov_table.dat.txt, uncertainty: Cov_table__err.dat.txt)
+#
+  0.5     1.0
+  1.0     1.7
+  1.7     2.8
+  2.8     4.8
+  4.8     8.3
+  8.3    14.5
+ 14.5    22.9
+ 22.9    39.8
+ 39.8    62.2
+ 62.2   120.2
+120.2   331.1
+331.1  1000.0
+#
