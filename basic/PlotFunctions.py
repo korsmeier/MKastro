@@ -11,6 +11,7 @@ from    matplotlib                  import  rc
 import  matplotlib.ticker           as      tck
 from    matplotlib.ticker           import  FuncFormatter
 
+fontset='dejavuserif'
 
 def new_plot( xlabel, ylabel, xscale='linear', yscale='linear', print_size=10, label_size=25, sizex=1.0, sizey=0.75):
     
@@ -18,7 +19,7 @@ def new_plot( xlabel, ylabel, xscale='linear', yscale='linear', print_size=10, l
     font_props = {"size":label_size}
     rc("font", **font_props)
     mpl.rcParams['axes.linewidth'] = 2
-    mpl.rcParams['mathtext.fontset']='stixsans'
+    mpl.rcParams['mathtext.fontset']=fontset #fontset
     
     fig     = plt.figure(figsize=(print_size*sizex, print_size*sizey))
     plot    = plt.subplot2grid((1, 1), (0, 0), rowspan=1)
@@ -30,8 +31,8 @@ def new_plot( xlabel, ylabel, xscale='linear', yscale='linear', print_size=10, l
     plot.set_xscale ( xscale )
     plot.set_yscale ( yscale )
     
-    plot.tick_params('both', length=20, width=2, which='major', top=True, right=True, direction='in', pad=10)
-    plot.tick_params('both', length=10, width=1, which='minor', top=True, right=True, direction='in', pad=10)
+    plot.tick_params('both', length=10, width=2, which='major', top=True, right=True, direction='in', pad=10)
+    plot.tick_params('both', length= 5, width=1, which='minor', top=True, right=True, direction='in', pad=10)
     
     plot.grid(b=True, which='major', alpha=0.1, linestyle='-', linewidth=2)
 
@@ -46,7 +47,7 @@ def new_plot_res( xlabel='', ylabel='', xscale='log', yscale='log', print_size=1
     font_props = {"size":label_size}
     rc("font", **font_props)
     mpl.rcParams['axes.linewidth'] = 2
-    mpl.rcParams['mathtext.fontset']='stixsans'
+    mpl.rcParams['mathtext.fontset']=fontset
     
     fig          = plt.figure(figsize=(print_size*sizex, print_size*sizey))
     plot_main    = plt.subplot2grid((4, 1), (0, 0), rowspan=3)

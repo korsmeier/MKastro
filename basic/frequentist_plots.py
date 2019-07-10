@@ -13,6 +13,7 @@ colors_blue = ['#2A2871', '#4742E7', '#D7D6FF' ]
 colors_green= ['#005500', '#009900', '#00ff00' ]
 colors_amber= ['#ED872D', '#FF7E00', '#FFA700' ]
 colors_grey = ['#444444', '#888888', '#aaaaaa' ]
+colors_cyan = ['#24B3B8', '#6FE4E8', '#9DF0F3' ]
 colors_mag  = ['#71286D', '#BA10B1', '#DC96D8' ]
 
 
@@ -295,11 +296,14 @@ def draw_cluster_contour( fig, plot, vector_chi2, matrix_parameter, **kwargs ):
     if not 'zorder' in kwargs:
         kwargs['zorder'] = 1
 
+    if not 'relative_interpolation_lenght' in kwargs:
+        kwargs['relative_interpolation_lenght'] = 0.3
+
     # implemennt cluster finder (optional) 
 
-    x_1s, y_1s, _ = get_contour(matrix_parameter[:ind_1s_2D, 0], matrix_parameter[:ind_1s_2D, 1])
-    x_2s, y_2s, _ = get_contour(matrix_parameter[:ind_2s_2D, 0], matrix_parameter[:ind_2s_2D, 1])
-    x_3s, y_3s, _ = get_contour(matrix_parameter[:ind_3s_2D, 0], matrix_parameter[:ind_3s_2D, 1])
+    x_1s, y_1s, _ = get_contour(matrix_parameter[:ind_1s_2D, 0], matrix_parameter[:ind_1s_2D, 1],relative_interpolation_lenght=kwargs['relative_interpolation_lenght'])
+    x_2s, y_2s, _ = get_contour(matrix_parameter[:ind_2s_2D, 0], matrix_parameter[:ind_2s_2D, 1],relative_interpolation_lenght=kwargs['relative_interpolation_lenght'])
+    x_3s, y_3s, _ = get_contour(matrix_parameter[:ind_3s_2D, 0], matrix_parameter[:ind_3s_2D, 1],relative_interpolation_lenght=kwargs['relative_interpolation_lenght'])
 
     patch1 = patches.PathPatch(xy_to_path(x_1s[:-1], y_1s[:-1]), facecolor=kwargs['colors'][0], lw=0, alpha=kwargs['alpha'], zorder=kwargs['zorder'] )
     patch2 = patches.PathPatch(xy_to_path(x_2s[:-1], y_2s[:-1]), facecolor=kwargs['colors'][1], lw=0, alpha=kwargs['alpha'], zorder=kwargs['zorder']  )

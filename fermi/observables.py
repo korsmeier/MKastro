@@ -27,12 +27,10 @@ _4FGL_gamma             = cat4FGL.get( 'PL_Index'           )
 _4FGL_CLASS1            = cat4FGL.get( 'CLASS1'             )
 
 _4FGL_z                 = -2. * np.ones( n_4FGL )
-
 _4FGL_SED               = np.empty( n_4FGL, dtype='S5' )
 
-_4LAC_z         = cat4LAC.get('Redshift'    )
-_4LAC_SED       = cat4LAC.get('SED_class'   )
-
+_4LAC_z                 = cat4LAC.get('Redshift'    )
+_4LAC_SED               = cat4LAC.get('SED_class'   )
 
 
 for i in range(n_4FGL):
@@ -42,6 +40,17 @@ for i in range(n_4FGL):
         _4FGL_SED[i] = _4LAC_SED[i4LAC]
         if _4FGL_z[i]<0:
             _4FGL_z[i] = -1
+
+def get_4FGL_4LAC( observable, row=-1  ):
+    if observable=='Redshift':
+        if row<0:
+            return np.copy(_4FGL_z[:])
+        return _4FGL_z[row]
+    if observable=='SED_class':
+        if row<0:
+            return np.copy(_4LAC_SED[:])
+        return _4LAC_SED[row]
+    return cat4FGL.get( observable, row )
 
 '''
     Function to apply cuts on 4FGL (and 4LAC) sources

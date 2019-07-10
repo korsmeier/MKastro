@@ -13,6 +13,7 @@ from    matplotlib.ticker       import  MaxNLocator
 from    matplotlib.path         import  Path
 from    matplotlib              import  rc
 
+fontset='dejavuserif'
 
 def prepare_triangle(npar, label_size=None, print_size=15, **kwargs):
     #
@@ -26,7 +27,7 @@ def prepare_triangle(npar, label_size=None, print_size=15, **kwargs):
     font_props = {"size":label_size}
     rc("font", **font_props)
     mpl.rcParams['axes.linewidth'] = 1
-    mpl.rcParams['mathtext.fontset']='stixsans'
+    mpl.rcParams['mathtext.fontset']=fontset
     #
     if not 'max_n_locator' in kwargs:
         loc = 6
@@ -71,17 +72,17 @@ def prepare_triangle(npar, label_size=None, print_size=15, **kwargs):
                 tick.set_horizontalalignment('right')
             plotArray[iP][jP].xaxis.set_major_locator(MaxNLocator(kwargs['max_n_locator']))
             plotArray[iP][jP].yaxis.set_major_locator(MaxNLocator(kwargs['max_n_locator']))
-            plotArray[iP][jP].xaxis.set_tick_params(length=6, width=1, top=True, right=True, direction='in')
-            plotArray[iP][jP].yaxis.set_tick_params(length=6, width=1, top=True, right=True, direction='in')
+            plotArray[iP][jP].xaxis.set_tick_params(length=6, width=1, top=True, right=True, direction='in', pad=10)
+            plotArray[iP][jP].yaxis.set_tick_params(length=6, width=1, top=True, right=True, direction='in', pad=10)
             if j==0:
                 plotArray[iP][jP].set_ylabel( 'par %i' %i )
             if i==npar-1:
                 plotArray[iP][jP].set_xlabel( 'par %i' %j )
             if i<npar-1:
-                plotArray[iP][jP].xaxis.set_tick_params( labelsize=0, top=True, right=True, direction='in'  )
+                plotArray[iP][jP].xaxis.set_tick_params( labelsize=0, top=True, right=True, direction='in', pad=10  )
                 plotArray[iP][jP].xaxis.get_offset_text().set_fontsize(0)
             if j>0:
-                plotArray[iP][jP].yaxis.set_tick_params( labelsize=0, top=True, right=True, direction='in'  )
+                plotArray[iP][jP].yaxis.set_tick_params( labelsize=0, top=True, right=True, direction='in', pad=10  )
                 plotArray[iP][jP].yaxis.get_offset_text().set_fontsize(0)
             #
     return fig, plotArray
@@ -158,13 +159,13 @@ def set_triangle_scales( fig, plotArray, scales, **kwargs ):
                 if scales[i]=='log':
                     aax2[iP][jP].set_ylim( np.power(10, np.array(plotArray[iP][jP].get_ylim())) )
                 aax2[iP][jP].set_yscale( scales[i+y_offset] )
-            aax2[iP][jP].xaxis.set_tick_params(length=6, width=1, top=True, right=True, direction='in')
-            aax2[iP][jP].yaxis.set_tick_params(length=6, width=1, top=True, right=True, direction='in')
+            aax2[iP][jP].xaxis.set_tick_params(length=6, width=1, top=True, right=True, direction='in', pad=10)
+            aax2[iP][jP].yaxis.set_tick_params(length=6, width=1, top=True, right=True, direction='in', pad=10)
             if scales[j]=='log':
-                aax2[iP][jP].xaxis.set_tick_params('minor', length=3, width=1, top=True, right=True, direction='in')
+                aax2[iP][jP].xaxis.set_tick_params('minor', length=3, width=1, top=True, right=True, direction='in', pad=10)
             if iP!=jP:
                 if scales[i]=='log':
-                    aax2[iP][jP].yaxis.set_tick_params('minor', length=3, width=1, top=True, right=True, direction='in')
+                    aax2[iP][jP].yaxis.set_tick_params('minor', length=3, width=1, top=True, right=True, direction='in', pad=10)
             for tick in aax2[iP][jP].get_xticklabels(which='both'):
                 tick.set_rotation(90)
             if j==0:
@@ -172,10 +173,10 @@ def set_triangle_scales( fig, plotArray, scales, **kwargs ):
             if i==npar-1:
                 aax2[iP][jP].set_xlabel( plotArray[iP][jP].get_xlabel() )
             if i<npar-1:
-                aax2[iP][jP].xaxis.set_tick_params( 'both', labelsize=0, top=True, right=True, direction='in'  )
+                aax2[iP][jP].xaxis.set_tick_params( 'both', labelsize=0, top=True, right=True, direction='in', pad=10  )
                 aax2[iP][jP].xaxis.get_offset_text().set_fontsize(0)
             if j>0:
-                aax2[iP][jP].yaxis.set_tick_params( 'both', labelsize=0, top=True, right=True, direction='in'  )
+                aax2[iP][jP].yaxis.set_tick_params( 'both', labelsize=0, top=True, right=True, direction='in', pad=10  )
                 aax2[iP][jP].yaxis.get_offset_text().set_fontsize(0)
             if len(scales)==npar and iP==0 and jP==0:
                 aax2[iP][jP].set_ylabel('$-2\log(\mathcal{L})$')
