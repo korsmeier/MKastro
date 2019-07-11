@@ -37,8 +37,8 @@ get_ij = np.vectorize(_get_ij)
 
 ######### Functions for simple Cp model
 #
-#
-#   A E^-beta S^-gamma
+#   dN_ph/dE ~ E^-Gamma
+#   dN/dS    = A S^-beta
 #
 #
 
@@ -47,11 +47,11 @@ def powerlaw_integral(xmin, xmax, alpha):
         return np.ln( xmax/xmin )
     return 1./(1+alpha) * ( np.power( xmax, 1+alpha ) - np.power( xmin, 1+alpha ) )
 
-def _get_Cp_simple_model( Emin, Emax, E2min, E2max,  A, beta, gamma, k=1.  ):
-    F1000_cut_4FGL = fermiObs.F_thresh__Gamma_4FGL( beta )
-    F1000_cut_3FHL = fermiObs.F_thresh__Gamma_3FHL( beta )
+def _get_Cp_simple_model( Emin, Emax, E2min, E2max,  A, beta, Gamma, k=1.  ):
+    F1000_cut_4FGL = fermiObs.F_thresh__Gamma_4FGL( Gamma )
+    F1000_cut_3FHL = fermiObs.F_thresh__Gamma_3FHL( Gamma )
     
-    F1000_cut_3FHL = fermiObs.F_E__from__F_Efrom( F_Efrom=F1000_cut_3FHL, Gamma=gamma, Emin=1, Emax=100, Emin_from=10, Emax_from=1000 )
+    F1000_cut_3FHL = fermiObs.F_E__from__F_Efrom( F_Efrom=F1000_cut_3FHL, Gamma=Gamma, Emin=1, Emax=100, Emin_from=10, Emax_from=1000 )
     
     cut1 = F1000_cut_4FGL
     cut2 = F1000_cut_4FGL
@@ -65,10 +65,10 @@ def _get_Cp_simple_model( Emin, Emax, E2min, E2max,  A, beta, gamma, k=1.  ):
         cut2 = F1000_cut_3FHL
     F_cut = np.amin( [cut1, cut2] )
 
-    integral_E1 = powerlaw_integral(  Emin,  Emax,          -beta       )
-    integral_E2 = powerlaw_integral(  E2min, E2max,         -beta       )
-    integral_E  = powerlaw_integral(  1.,    100. ,         -beta       )
-    integral_F  = powerlaw_integral(  0.,    F_cut*k,       -gamma+2    )
+    integral_E1 = powerlaw_integral(  Emin,  Emax,          -Gamma       )
+    integral_E2 = powerlaw_integral(  E2min, E2max,         -Gamma       )
+    integral_E  = powerlaw_integral(  1.,    100. ,         -Gamma       )
+    integral_F  = powerlaw_integral(  0.,    F_cut*k,       -beta+2    )
     return A*integral_E1*integral_E2/integral_E**2 * integral_F
 
 get_Cp_simple_model = np.vectorize(_get_Cp_simple_model)
