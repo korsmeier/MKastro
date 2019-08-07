@@ -85,7 +85,7 @@ get_Cp_simple_model = np.vectorize(_get_Cp_simple_model)
 #      S_0 = 1e-10 cm^2 s^-1
 #
 def _get_Cp_simple_model_GammaDistr( Emin, Emax, E2min, E2max,  A, beta, mu, sigma, k=1.  ):
-    Gamma_min = 1.0
-    Gamma_max = 3.0
+    Gamma_min = np.amax([1.0, mu-5*sigma])
+    Gamma_max = np.amin([3.0, mu+5*sigma])
     return integrate.quad(lambda Gamma: _get_Cp_simple_model(Emin, Emax, E2min, E2max,  A, Gamma=Gamma, beta=beta, k=k)*1./(sigma * np.sqrt(2 * np.pi)) * np.exp( - (Gamma - mu)**2 / (2 * sigma**2) ), Gamma_min, Gamma_max)[0]
 get_Cp_simple_model_GammaDistr = np.vectorize(_get_Cp_simple_model_GammaDistr)
