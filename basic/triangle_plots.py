@@ -224,3 +224,39 @@ def draw_diagonal( fig, plotArray, draw_function, vector_chi2, matrix_parameter,
         draw_function(fig, plotArray[iP][jP], vector_chi2, matrix_parameter[:,vector_positions[i]], **kwargs_draw_function)
 
 
+from   numpy import linalg as LA
+# 1 sigma contour of a cov matrix V
+def contour_deta_chi2_eq_1(V,i,j):
+    M = LA.inv(V[i:j+1:j-i,i:j+1:j-i])
+    def x_vec(t):
+        w,v = LA.eigh(M)
+        return np.sqrt(1./w[0])*(v[0])[0]*np.cos(t)+np.sqrt(1./w[1])*(v[1])[0]*np.sin(t), np.sqrt(1./w[0])*(v[0])[1]*np.cos(t)+np.sqrt(1./w[1])*(v[1])[1]*np.sin(t)
+    t = np.arange(0,2*math.pi+0.11,0.1)
+    return x_vec(t)
+
+def draw_triangle_covariance_matrix( fig, plotArray, mean, V, vector_positions, color='blue', dashes=(), lw=1.0 ):
+    im = None
+    # * * * * * * * * * * * * * * * * * * * * * #
+    # Loop triangles:                           #
+    #    - plot in lower triangle               #
+    # * * * * * * * * * * * * * * * * * * * * * #
+    if( len(vector_positions)>len(plotArray[:,0]) ):
+        y_offset=-1
+    else:
+        y_offset=0
+    x_offset=0
+    for i in range(0, len(vector_positions)):
+        if vector_positions[i]<0:
+            continue
+        for j in range(0, i):
+            if vector_positions[j]<0:
+                continue
+            #
+            iP = i + y_offset#-1
+            jP = j + x_offset
+            #
+            plotArray[iP][jP].axis('on')
+            line = contour_deta_chi2_eq_1(V,vector_positions[j],vector_positions[i])
+        
+            plotArray[iP][jP].plot( line[0] * np.sqrt(2.3) + mean[j] , line[1]  * np.sqrt(2.3) + mean[i], color=color, dashes=dashes, lw=lw )
+    return im
