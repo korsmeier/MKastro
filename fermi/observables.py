@@ -58,7 +58,7 @@ def get_4FGL_4LAC( observable, row=-1  ):
     param z      len(2) array [ z_lower, z_upper ], z=-1: no redshift measurement, z=-2: not in 4LAC
     param bLAT   minimal Latitude in deg
     param CLASS  string with source classes, use 'all' for any class. Example "fsrq bll bcu"
-    param CLASS  string with source SED, use 'all' for any SED. Example "HSP LSP"
+    param SED    string with source SED, use 'all' for any SED. Example "HSP LSP"
     
     return      list of 4FGL indices fullfilling the cuts
     '''
@@ -110,16 +110,16 @@ def F_E__from__F_1000( F_1000, Gamma, Emin, Emax ):
 
 
 '''
-    Function to apply cuts on 4FGL (and 4LAC) sources
+    Function to get dN/dF, applying cuts on 4FGL (and 4LAC) sources
     
-    param F      array, F bins
+    param F      array, F bins,  F in cm^-2 s^-1
     param E      len(2) array [ E_lower, E_upper ], E in GeV
     param z      len(2) array [ z_lower, z_upper ], z=-1: no redshift measurement, z=-2: not in 4LAC
     param bLAT   minimal Latitude in deg
     param CLASS  string with source classes, use 'all' for any class. Example "fsrq bll bcu"
     param CLASS  string with source SED, use 'all' for any SED. Example "HSP LSP"
     
-    return       F_average dN/dF   ( arrays of size len(F)-1 )
+    return       F_average, dN/dF, (dN/dF) uncertainty   ( arrays of size len(F)-1 ), [dN/dF]=cm^2 s^1 deg^-2
     '''
 def get_dNdF( F,  E=[0.1,100], z=[-3, 10], Gamma=[0,5], bLAT=30, CLASS='all', SED='all'  ):
     global _4FGL_gamma, _4FGL_Flux1000
@@ -141,6 +141,37 @@ def get_dNdF( F,  E=[0.1,100], z=[-3, 10], Gamma=[0,5], bLAT=30, CLASS='all', SE
     dN_dF_err = N_err * 1./ (Delta_F*_4pi_to_square_deg*geom_fact)
     #
     return F_mean, dN_dF, dN_dF_err
+
+
+'''
+    Function to get the number of sources, applying different cuts on 4FGL (and 4LAC) sources
+    
+    param F      array, F bins,  F in cm^-2 s^-1
+    param E      len(2) array [ E_lower, E_upper ], E in GeV
+    param z      len(2) array [ z_lower, z_upper ], z=-1: no redshift measurement, z=-2: not in 4LAC
+    param bLAT   minimal Latitude in deg
+    param CLASS  string with source classes, use 'all' for any class. Example "fsrq bll bcu"
+    param CLASS  string with source SED, use 'all' for any SED. Example "HSP LSP"
+    
+    return       N   (Number of sources, arrays of size len(F)-1 )
+    '''
+def get_N( F,  E=[0.1,100], z=[-3, 10], Gamma=[0,5], bLAT=30, CLASS='all', SED='all'  ):
+    global _4FGL_gamma, _4FGL_Flux1000
+    #
+    sources_list = get_list_cuts_4FGL_4LAC( z, Gamma, bLAT, CLASS, SED )
+    #
+    F_list  = F_E__from__F_1000( _4FGL_Flux1000, _4FGL_gamma, E[0], E[1] )[sources_list]
+    F_upper = F[1:  ]
+    F_lower = F[ :-1]
+    if len(F_upper)==1:
+        F_upper = F_upper[0]
+        F_lower = F_lower[0]
+    N       = np.histogram(F_list, F)[0]
+    #
+    return N
+
+
+
 
 
 index_4FGL_F_thresh = 11
