@@ -89,3 +89,26 @@ def _get_Cp_simple_model_GammaDistr( Emin, Emax, E2min, E2max,  A, beta, mu, sig
     Gamma_max = np.amin([3.0, mu+5*sigma])
     return integrate.quad(lambda Gamma: _get_Cp_simple_model(Emin, Emax, E2min, E2max,  A, Gamma=Gamma, beta=beta, k=k)*1./(sigma * np.sqrt(2 * np.pi)) * np.exp( - (Gamma - mu)**2 / (2 * sigma**2) ), Gamma_min, Gamma_max)[0]
 get_Cp_simple_model_GammaDistr = np.vectorize(_get_Cp_simple_model_GammaDistr)
+
+
+
+
+
+######### Functions for simple dN/dS model
+#
+#   dN_ph/dE ~ E^-Gamma
+#   dN/dS    = A (S/S_0)^-beta
+#
+#      S: Flux in the [Emin, Emax];  [E]=GeV, [S]=cm^-2 s^-1
+#      S_0 = 1e-10 cm^-2 s^-1
+#
+#      [A]     = cm^-2 s^-1 sr
+#      [dN/dS] = cm^-2 s^-1 sr^-1
+#
+def _get_dNdS_simple_model( S, Emin, Emax, A, beta, Gamma ):
+    S_0 = 1e-10
+    integral_E     = powerlaw_integral(  Emin,  Emax,          -Gamma       )
+    integral_1000  = powerlaw_integral(  1.,    100. ,         -Gamma       )
+    f = integral_E/integral_1000
+    return A * ( S / S_0 )**-beta * f**(beta-1)
+get_dNdS_simple_model = np.vectorize(_get_dNdS_simple_model)
