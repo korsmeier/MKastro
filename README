@@ -34,9 +34,9 @@ If you do not want to link the package to your python version you have
 to create a symbolic link of the py2 or py3 directory in the directory 
 where you want to use the package. 
 
-$ ln -s PATH_TO_CRXS/py2 MKastro
+$ ln -s PATH_TO_THIS_DIR/py2 MKastro
 
-To include the package use
+To include the package use for example
 
 import MKastro.basic.Constants.py
 import MKastro.basic.PlotFunctions.py
