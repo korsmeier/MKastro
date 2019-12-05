@@ -248,6 +248,8 @@ def draw_histogram_1D(fig, plot, vector_weights, vector_parameter, **kwargs):
         kwargs['color'] = 'black'
     if not 'norm_1' in kwargs:
         kwargs['norm_1'] = False
+    if not 'smoothing' in kwargs:
+        kwargs['smoothing'] = 0
     #
     p_from = np.amin(vector_parameter)
     p_to   = np.amax(vector_parameter)
@@ -263,6 +265,23 @@ def draw_histogram_1D(fig, plot, vector_weights, vector_parameter, **kwargs):
         if bin>=0 and bin<kwargs['n_histbins']:
             hist_values[bin] += w
     #
+    smoothing = kwargs['smoothing']
+    ## We multiply with a Gaussian kernal of width: <smoothing> * bin_width
+    if smoothing > 0 :
+        new_values     = np.copy(hist_values)
+        new_values     = np.log(new_values+1e-90)
+        new_values_II  = np.copy(new_values)
+        for i,v in enumerate(new_values):
+            new_values_II[i] = 0
+            for j in range(-10, len(hist_values)+10):
+                jj = j
+                if j < 0:
+                    jj = 0
+                if j >= len(hist_values):
+                    jj = len(hist_values) - 1
+                new_values_II[i] += 1./np.sqrt( 2* math.pi * smoothing**2 ) * np.exp( - (i-j)**2/2./smoothing**2 ) * new_values[jj]
+        hist_values = np.exp(new_values_II)
+    #
     p_x = np.zeros(2*len(hist_means))
     p_y = np.copy(p_x)
     #
@@ -277,8 +296,8 @@ def draw_histogram_1D(fig, plot, vector_weights, vector_parameter, **kwargs):
     if kwargs['norm_1']:
         norm = np.amax(hist_values)
     if   kwargs['style'] == 'hist':
-        plot.plot(p_x,        p_y/norm,         color=kwargs['color'])
+        plot.plot(p_x,        p_y/norm,         color=kwargs['color'], lw=1.5)
     elif kwargs['style'] == 'line':
-        plot.plot(hist_means, hist_values/norm, color=kwargs['color'])
+        plot.plot(hist_means, hist_values/norm, color=kwargs['color'], lw=1.5)
     plot.set_xlim( (p_from,p_to) )
     plot.set_ylim( (0, 1.2*np.amax(hist_values)/norm ) )

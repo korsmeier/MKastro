@@ -512,6 +512,8 @@ def draw_histogram_1D(fig, plot, vector_chi2, vector_parameter, **kwargs):
         kwargs['range_delta_chi2'] = 10
     if not 'plot_Delta_logLik' in kwargs:
         kwargs['plot_Delta_logLik'] = False
+    if not 'smoothing' in kwargs:
+        kwargs['smoothing'] = 0
     #
     p_from = np.amin(vector_parameter)
     p_to   = np.amax(vector_parameter)
@@ -530,6 +532,24 @@ def draw_histogram_1D(fig, plot, vector_chi2, vector_parameter, **kwargs):
         if bin>=0 and bin<kwargs['n_histbins']:
             hist_values[bin] = np.minimum( hist_values[bin], chi2 )
     #
+    smoothing = kwargs['smoothing']
+    ## We multiply with a Gaussian kernal with a width of <smoothing> * bin_width
+    if smoothing > 0 :
+        new_values     = np.copy(hist_values)
+        new_values     = new_values - np.amin(hist_values) + 10.
+        new_values     = np.log(new_values)
+        new_values_II  = np.copy(new_values)
+        for i,v in enumerate(new_values):
+            new_values_II[i] = 0
+            for j in range(-10, len(hist_values)+10):
+                jj = j
+                if j < 0:
+                    jj = 0
+                if j >= len(hist_values):
+                    jj = len(hist_values) - 1
+                new_values_II[i] += 1./np.sqrt( 2* math.pi * smoothing**2 ) * np.exp( - (i-j)**2/2./smoothing**2 ) * new_values[jj]
+        hist_values = np.exp(new_values_II) - np.amin(np.exp(new_values_II)) + np.amin(hist_values)
+    #
     p_x = np.zeros(2*len(hist_means))
     p_y = np.copy(p_x)
     p_x[0::2] = hist_bins[ :-1]
@@ -543,9 +563,30 @@ def draw_histogram_1D(fig, plot, vector_chi2, vector_parameter, **kwargs):
     if kwargs['plot_Delta_logLik']:
         d = -chi2_min
     if   kwargs['style'] == 'hist':
-        plot.plot(p_x,        p_y+d,         color=kwargs['color'])
+        plot.plot(p_x,        p_y+d,         color=kwargs['color'], lw=1.5)
     elif kwargs['style'] == 'line':
-        plot.plot(hist_means, hist_values+d, color=kwargs['color'])
+        plot.plot(hist_means, hist_values+d, color=kwargs['color'], lw=1.5)
     #plot.set_xlim( (p_from,p_to) )
     plot.set_ylim( (chi2_min+d,chi2_min+d+kwargs['range_delta_chi2']) )
 
+
+def get_bestfit_and_uncertainty(vector_chi2, vector_parameter):
+    # Get min chiSq
+    sorted     = np.argsort(vector_chi2)
+
+    chi2_best  = vector_chi2      [sorted[0]]
+    p_best     = vector_parameter [sorted[0]]
+    
+    sigma = 1
+    p_u   = p_best
+    p_l   = p_best
+    for i in sorted:
+        #print(vector_chi2[i] - chi2_best)
+        if vector_chi2[i] - chi2_best > sigma**2:
+            break
+        p_l = np.minimum(p_l, vector_parameter[i])
+        p_u = np.maximum(p_u, vector_parameter[i])
+    
+    print( '%8.2e  +%8.2e   -%8.2e' % ( p_best, p_u-p_best, p_best-p_l )  )
+    #print( '%8.2e,  %8.2e,   %8.2e' % ( p_best, p_l       , p_u        )  )
+    return p_best, p_u-p_best, p_best-p_l
