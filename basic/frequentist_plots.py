@@ -570,23 +570,45 @@ def draw_histogram_1D(fig, plot, vector_chi2, vector_parameter, **kwargs):
     plot.set_ylim( (chi2_min+d,chi2_min+d+kwargs['range_delta_chi2']) )
 
 
-def get_bestfit_and_uncertainty(vector_chi2, vector_parameter):
+def get_bestfit_and_uncertainty(vector_chi2, vector_parameter, sigma=1):
     # Get min chiSq
     sorted     = np.argsort(vector_chi2)
 
     chi2_best  = vector_chi2      [sorted[0]]
     p_best     = vector_parameter [sorted[0]]
     
-    sigma = 1
     p_u   = p_best
     p_l   = p_best
+    chi_u = chi2_best
+    chi_l = chi2_best
     for i in sorted:
         #print(vector_chi2[i] - chi2_best)
         if vector_chi2[i] - chi2_best > sigma**2:
             break
-        p_l = np.minimum(p_l, vector_parameter[i])
-        p_u = np.maximum(p_u, vector_parameter[i])
-    
-    print( '%8.2e  +%8.2e   -%8.2e' % ( p_best, p_u-p_best, p_best-p_l )  )
-    #print( '%8.2e,  %8.2e,   %8.2e' % ( p_best, p_l       , p_u        )  )
-    return p_best, p_u-p_best, p_best-p_l
+        if p_l > vector_parameter[i]:
+            p_l   = vector_parameter[i]
+            chi_l = vector_chi2[i]
+        if p_u < vector_parameter[i]:
+            p_u = vector_parameter[i]
+            chi_u = vector_chi2[i]
+
+    p_le   = p_l
+    p_ue   = p_u
+    for i in sorted:
+        if p_l > vector_parameter[i]:
+            m_l  = ( chi_l - vector_chi2[i] )/(p_l - vector_parameter[i])
+            b_l  = ( chi_l * vector_parameter[i] - vector_chi2[i] * p_l )/(vector_parameter[i] - p_l)
+            p_ll = ( chi2_best + sigma**2 - b_l )/m_l
+            p_le = np.minimum(p_ll, p_le)
+        if p_u < vector_parameter[i]:
+            m_u  = ( chi_u - vector_chi2[i] )/(p_u - vector_parameter[i])
+            b_u  = ( chi_u * vector_parameter[i] - vector_chi2[i] * p_u )/(vector_parameter[i] - p_u)
+            p_uu = ( chi2_best + sigma**2 - b_u )/m_u
+            p_ue = np.maximum(p_uu, p_ue)
+
+    p_ue = np.minimum(np.amax(vector_parameter), p_ue)
+    p_le = np.maximum(np.amin(vector_parameter), p_le)
+#    print( '%8.2e  +%8.2e   -%8.2e'      % ( p_best, p_u-p_best,  p_best-p_l  )  )
+#    print( '%8.2e  +%8.2e   -%8.2e  <--' % ( p_best, p_ue-p_best, p_best-p_le )  )
+#    sys.exit(0)
+    return p_best, p_ue-p_best, p_best-p_le

@@ -71,6 +71,7 @@ def get_list_cuts_4FGL_4LAC( z=[-3, 10], Gamma=[0,5], bLAT=30, CLASS='all', SED=
         if not         _4FGL_gamma[i]                        <   Gamma[1]   : continue
         if not np.fabs(_4FGL_GLAT[i])                        >   bLAT       : continue
         if not 'all' in CLASS:
+            if str(_4FGL_CLASS1[i]).lower().split(' ')[0]=='': continue
             if not     str(_4FGL_CLASS1[i]).lower().split(' ')[0]       in  CLASS.lower()               :  continue
         if not 'all' in SED:
             if not     (str(_4FGL_SED[i].decode('utf-8'))+' ').upper().split(' ')[0] in  SED.upper()    :  continue
