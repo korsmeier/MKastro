@@ -229,7 +229,6 @@ def _get_dNdF_simple_cutoff_model( F, Emin, Emax, A, beta, Gamma, E_c ):
 get_dNdF_simple_cutoff_model = np.vectorize(_get_dNdF_simple_cutoff_model)
 
 
-cpp_get_Cp_simple_model_optimized = np.vectorize(PM_cpp.get_Cp_simple_model_optimized)
 
 
 ######### Functions for simple dN/dS model
