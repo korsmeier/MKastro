@@ -77,7 +77,7 @@ def get_list_cuts_4FGL_4LAC( z=[-3, 10], Gamma=[0,5], bLAT=30, CLASS='all', SED=
             if not     (str(_4FGL_SED[i].decode('utf-8'))+' ').upper().split(' ')[0] in  SED.upper()    :  continue
         index_list.append(i)
     index_list = np.array(index_list)
-    return index_list
+    return [int(i) for i in index_list]
 
 
 '''
