@@ -595,6 +595,8 @@ def get_bestfit_and_uncertainty(vector_chi2, vector_parameter, sigma=1):
     p_le   = p_l
     p_ue   = p_u
     for i in sorted:
+        if vector_chi2[i] - chi2_best > (sigma+1)**2:
+            break
         if p_l > vector_parameter[i]:
             m_l  = ( chi_l - vector_chi2[i] )/(p_l - vector_parameter[i])
             b_l  = ( chi_l * vector_parameter[i] - vector_chi2[i] * p_l )/(vector_parameter[i] - p_l)

@@ -70,6 +70,10 @@ def get_list_cuts_4FGL_4LAC( z=[-3, 10], Gamma=[0,5], bLAT=30, CLASS='all', SED=
         if not         _4FGL_gamma[i]                        >   Gamma[0]   : continue
         if not         _4FGL_gamma[i]                        <   Gamma[1]   : continue
         if not np.fabs(_4FGL_GLAT[i])                        >   bLAT       : continue
+        if 'una' in CLASS:
+            if str(_4FGL_CLASS1[i]).lower().split(' ')[0]=='':
+                index_list.append(i)
+                continue
         if not 'all' in CLASS:
             if str(_4FGL_CLASS1[i]).lower().split(' ')[0]=='': continue
             if not     str(_4FGL_CLASS1[i]).lower().split(' ')[0]       in  CLASS.lower()               :  continue
@@ -152,7 +156,7 @@ def get_dNdF( F,  E=[0.1,100], z=[-3, 10], Gamma=[0,5], bLAT=30, CLASS='all', SE
     param z      len(2) array [ z_lower, z_upper ], z=-1: no redshift measurement, z=-2: not in 4LAC
     param bLAT   minimal Latitude in deg
     param CLASS  string with source classes, use 'all' for any class. Example "fsrq bll bcu"
-    param CLASS  string with source SED, use 'all' for any SED. Example "HSP LSP"
+    param SED    string with source SED, use 'all' for any SED. Example "HSP LSP"
     
     return       N   (Number of sources, arrays of size len(F)-1 )
     '''
