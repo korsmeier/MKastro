@@ -275,14 +275,20 @@ def xy_to_path(x,y,):
 
 # one might consider to apply a cluster finding first: recursive_cluster_finder
 def draw_cluster_contour( fig, plot, vector_chi2, matrix_parameter, **kwargs ):
+    ind_1s_2D = 1
+    ind_2s_2D = 1
+    ind_3s_2D = 1
     chi2_min = vector_chi2[0]
     for i, chi2 in enumerate(vector_chi2):
         if   chi2-chi2_min < 2.3:
-            ind_1s_2D = i
+            ind_1s_2D = i+1
+            ind_2s_2D = i+1
+            ind_3s_2D = i+1
         elif chi2-chi2_min < 6.18:
-            ind_2s_2D = i
+            ind_2s_2D = i+1
+            ind_3s_2D = i+1
         elif chi2-chi2_min < 11.83:
-            ind_3s_2D = i
+            ind_3s_2D = i+1
         else:
             break
     if not 'colors' in kwargs:
@@ -299,23 +305,27 @@ def draw_cluster_contour( fig, plot, vector_chi2, matrix_parameter, **kwargs ):
     if not 'relative_interpolation_lenght' in kwargs:
         kwargs['relative_interpolation_lenght'] = 0.3
 
-    # implemennt cluster finder (optional) 
+    # implemennt cluster finder (optional)
+    
+    if ind_1s_2D>10:
+        x_1s, y_1s, _ = get_contour(matrix_parameter[:ind_1s_2D, 0], matrix_parameter[:ind_1s_2D, 1],relative_interpolation_lenght=kwargs['relative_interpolation_lenght'])
+        patch1 = patches.PathPatch(xy_to_path(x_1s[:-1], y_1s[:-1]), facecolor=kwargs['colors'][0], lw=0, alpha=kwargs['alpha'], zorder=kwargs['zorder'] )
+        plot.plot( x_1s, y_1s, color=kwargs['ec'], lw=kwargs['lw'], zorder=(kwargs['zorder']+100) )
+    if ind_2s_2D>10:
+        x_2s, y_2s, _ = get_contour(matrix_parameter[:ind_2s_2D, 0], matrix_parameter[:ind_2s_2D, 1],relative_interpolation_lenght=kwargs['relative_interpolation_lenght'])
+        patch2 = patches.PathPatch(xy_to_path(x_2s[:-1], y_2s[:-1]), facecolor=kwargs['colors'][1], lw=0, alpha=kwargs['alpha'], zorder=kwargs['zorder']  )
+        plot.plot( x_2s, y_2s, color=kwargs['ec'], lw=kwargs['lw'], zorder=(kwargs['zorder']+100) )
+    if ind_3s_2D>10:
+        x_3s, y_3s, _ = get_contour(matrix_parameter[:ind_3s_2D, 0], matrix_parameter[:ind_3s_2D, 1],relative_interpolation_lenght=kwargs['relative_interpolation_lenght'])
+        patch3 = patches.PathPatch(xy_to_path(x_3s[:-1], y_3s[:-1]), facecolor=kwargs['colors'][2], lw=0, alpha=kwargs['alpha'], zorder=kwargs['zorder'] )
+        plot.plot( x_3s, y_3s, color=kwargs['ec'], lw=kwargs['lw'], zorder=(kwargs['zorder']+100) )
 
-    x_1s, y_1s, _ = get_contour(matrix_parameter[:ind_1s_2D, 0], matrix_parameter[:ind_1s_2D, 1],relative_interpolation_lenght=kwargs['relative_interpolation_lenght'])
-    x_2s, y_2s, _ = get_contour(matrix_parameter[:ind_2s_2D, 0], matrix_parameter[:ind_2s_2D, 1],relative_interpolation_lenght=kwargs['relative_interpolation_lenght'])
-    x_3s, y_3s, _ = get_contour(matrix_parameter[:ind_3s_2D, 0], matrix_parameter[:ind_3s_2D, 1],relative_interpolation_lenght=kwargs['relative_interpolation_lenght'])
-
-    patch1 = patches.PathPatch(xy_to_path(x_1s[:-1], y_1s[:-1]), facecolor=kwargs['colors'][0], lw=0, alpha=kwargs['alpha'], zorder=kwargs['zorder'] )
-    patch2 = patches.PathPatch(xy_to_path(x_2s[:-1], y_2s[:-1]), facecolor=kwargs['colors'][1], lw=0, alpha=kwargs['alpha'], zorder=kwargs['zorder']  )
-    patch3 = patches.PathPatch(xy_to_path(x_3s[:-1], y_3s[:-1]), facecolor=kwargs['colors'][2], lw=0, alpha=kwargs['alpha'], zorder=kwargs['zorder'] )
-
-    plot.add_patch(patch3)
-    plot.add_patch(patch2)
-    plot.add_patch(patch1)
-
-    plot.plot( x_1s, y_1s, color=kwargs['ec'], lw=kwargs['lw'], zorder=(kwargs['zorder']+100) )
-    plot.plot( x_2s, y_2s, color=kwargs['ec'], lw=kwargs['lw'], zorder=(kwargs['zorder']+100) )
-    plot.plot( x_3s, y_3s, color=kwargs['ec'], lw=kwargs['lw'], zorder=(kwargs['zorder']+100) )
+    if ind_3s_2D>10:
+        plot.add_patch(patch3)
+    if ind_2s_2D>10:
+        plot.add_patch(patch2)
+    if ind_1s_2D>10:
+        plot.add_patch(patch1)
 
 
 def draw_best_fitpoint( fig, plot, vector_chi2, matrix_parameter, **kwargs ):
@@ -393,21 +403,24 @@ def draw_scatter_1to3sigma( fig, plot, vector_chi2, matrix_parameter, **kwargs )
         else:
             kwargs_forward[key] = kwargs[key]
     #
-    chi2_min = np.amin(vector_chi2)
     ## Find 1 to 3 sigma intervals
-    ind_1s_2D = 0
-    ind_2s_2D = 0
-    ind_3s_2D = 0
-    #
+    ind_1s_2D = 1
+    ind_2s_2D = 1
+    ind_3s_2D = 1
+    chi2_min = vector_chi2[0]
     for i, chi2 in enumerate(vector_chi2):
         if   chi2-chi2_min < 2.3:
-            ind_1s_2D = i
+            ind_1s_2D = i+1
+            ind_2s_2D = i+1
+            ind_3s_2D = i+1
         elif chi2-chi2_min < 6.18:
-            ind_2s_2D = i
+            ind_2s_2D = i+1
+            ind_3s_2D = i+1
         elif chi2-chi2_min < 11.83:
-            ind_3s_2D = i
+            ind_3s_2D = i+1
         else:
             break
+
     plot.scatter( matrix_parameter[ind_2s_2D:ind_3s_2D,0],matrix_parameter[ind_2s_2D:ind_3s_2D,1], c=colors[2], lw=lw, s=s, zorder=zorder, **kwargs_forward )
     plot.scatter( matrix_parameter[ind_1s_2D:ind_2s_2D,0],matrix_parameter[ind_1s_2D:ind_2s_2D,1], c=colors[1], lw=lw, s=s, zorder=zorder, **kwargs_forward )
     plot.scatter( matrix_parameter[         :ind_1s_2D,0],matrix_parameter[         :ind_1s_2D,1], c=colors[0], lw=lw, s=s, zorder=zorder, **kwargs_forward )

@@ -126,7 +126,7 @@ def F_E__from__F_1000( F_1000, Gamma, Emin, Emax ):
     
     return       F_average, dN/dF, (dN/dF) uncertainty   ( arrays of size len(F)-1 ), [dN/dF]=cm^2 s^1 deg^-2
     '''
-def get_dNdF( F,  E=[0.1,100], z=[-3, 10], Gamma=[0,5], bLAT=30, CLASS='all', SED='all'  ):
+def get_dNdF( F,  E=[1.0,100], z=[-3, 10], Gamma=[0,5], bLAT=30, CLASS='all', SED='all'  ):
     global _4FGL_gamma, _4FGL_Flux1000
     #
     sources_list = get_list_cuts_4FGL_4LAC( z, Gamma, bLAT, CLASS, SED )
@@ -160,7 +160,7 @@ def get_dNdF( F,  E=[0.1,100], z=[-3, 10], Gamma=[0,5], bLAT=30, CLASS='all', SE
     
     return       N   (Number of sources, arrays of size len(F)-1 )
     '''
-def get_N( F,  E=[0.1,100], z=[-3, 10], Gamma=[0,5], bLAT=30, CLASS='all', SED='all'  ):
+def get_N( F,  E=[1.0,100], z=[-3, 10], Gamma=[0,5], bLAT=30, CLASS='all', SED='all'  ):
     global _4FGL_gamma, _4FGL_Flux1000
     #
     sources_list = get_list_cuts_4FGL_4LAC( z, Gamma, bLAT, CLASS, SED )
@@ -172,6 +172,7 @@ def get_N( F,  E=[0.1,100], z=[-3, 10], Gamma=[0,5], bLAT=30, CLASS='all', SED='
         F_upper = F_upper[0]
         F_lower = F_lower[0]
     N       = np.histogram(F_list, F)[0]
+    #F_mean  = np.sqrt( F_upper * F_lower )
     #
     return N
 

@@ -18,7 +18,7 @@ fontset='dejavuserif'
 def prepare_triangle(npar, label_size=None, print_size=15, **kwargs):
     #
     if label_size==None:
-        label_size = int(30./np.sqrt(npar))
+        label_size = int(2*print_size/np.sqrt(npar))
     #
     plt.close('all')
     #
@@ -68,7 +68,7 @@ def prepare_triangle(npar, label_size=None, print_size=15, **kwargs):
             plotArray[iP][jP].axis('on')
             #
             for tick in plotArray[iP][jP].get_xticklabels():
-                tick.set_rotation(45)
+                tick.set_rotation(90)
                 tick.set_horizontalalignment('right')
             plotArray[iP][jP].xaxis.set_major_locator(MaxNLocator(kwargs['max_n_locator']))
             plotArray[iP][jP].yaxis.set_major_locator(MaxNLocator(kwargs['max_n_locator']))
