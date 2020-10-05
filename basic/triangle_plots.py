@@ -72,8 +72,8 @@ def prepare_triangle(npar, label_size=None, print_size=15, **kwargs):
                 tick.set_horizontalalignment('right')
             plotArray[iP][jP].xaxis.set_major_locator(MaxNLocator(kwargs['max_n_locator']))
             plotArray[iP][jP].yaxis.set_major_locator(MaxNLocator(kwargs['max_n_locator']))
-            plotArray[iP][jP].xaxis.set_tick_params(length=6, width=1, top=True, right=True, direction='in', pad=10)
-            plotArray[iP][jP].yaxis.set_tick_params(length=6, width=1, top=True, right=True, direction='in', pad=10)
+            plotArray[iP][jP].xaxis.set_tick_params(length=4, width=1, top=True, right=True, direction='in', pad=10)
+            plotArray[iP][jP].yaxis.set_tick_params(length=4, width=1, top=True, right=True, direction='in', pad=10)
             if j==0:
                 plotArray[iP][jP].set_ylabel( 'par %i' %i )
             if i==npar-1:
@@ -106,6 +106,23 @@ def set_triangle_labels_and_ranges( plotArray, labels, ranges=[] ):
                     plotArray[iP][jP].set_ylim( ranges[i+y_offset] )
     if len(labels)==npar:
         plotArray[0][0].set_ylabel('$-2\log(\mathcal{L})$')
+    for i in range(0, npar):
+        major_y = plotArray[i][0 ].yaxis.get_majorticklocs()
+        #print(major_y)
+        for j in range(0, i+1):
+            iP = i
+            jP = j
+            major_x = plotArray[npar-1][jP].xaxis.get_majorticklocs()
+            plotArray[iP][jP].xaxis.set_ticks( major_x[1:-1] )
+            if i!=j:
+                plotArray[iP][jP].yaxis.set_ticks( major_y[1:-1] )
+            #aax2[iP][jP].yaxis.set_ticks( major_y[:] )
+    if len(labels)==npar:
+        major_y = plotArray[0][0].yaxis.get_majorticklocs()
+        #print(major_y)
+        for i in range(0, npar):
+            plotArray[i][i].yaxis.set_ticks( major_y )
+
 
 def unify_ranges_from_diagonal( plotArray ):
     npar = len(plotArray)
@@ -180,6 +197,22 @@ def set_triangle_scales( fig, plotArray, scales, **kwargs ):
                 aax2[iP][jP].yaxis.get_offset_text().set_fontsize(0)
             if len(scales)==npar and iP==0 and jP==0:
                 aax2[iP][jP].set_ylabel('$-2\log(\mathcal{L})$')
+    for i in range(0, npar):
+        major_y = aax2[i][0 ].yaxis.get_majorticklocs()
+        #print(major_y)
+        for j in range(0, i+1):
+            iP = i
+            jP = j
+            major_x = aax2[npar-1][jP].xaxis.get_majorticklocs()
+            aax2[iP][jP].xaxis.set_ticks( major_x[1:-1] )
+            if i!=j:
+                aax2[iP][jP].yaxis.set_ticks( major_y[1:-1] )
+            #aax2[iP][jP].yaxis.set_ticks( major_y[:] )
+    if len(scales)==npar:
+        major_y = aax2[0][0].yaxis.get_majorticklocs()
+        #print(major_y)
+        for i in range(0, npar):
+            aax2[i][i].yaxis.set_ticks( major_y )
     return aax2
 
 

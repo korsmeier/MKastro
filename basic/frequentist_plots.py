@@ -5,7 +5,9 @@ import  matplotlib              as      mpl
 mpl.use('Agg')
 import  matplotlib.pyplot       as      plt
 import  matplotlib.patches      as      mpatches
-from matplotlib.patches         import  Rectangle
+from    matplotlib.patches      import  Rectangle
+import  scipy.signal            as      signal
+
 
 
 colors_red  = ['#880000', '#bb4444', '#ff7777' ]
@@ -201,19 +203,19 @@ def _to_positive_angle(phi):
         return _to_positive_angle(phi + 2*math.pi)
     return phi
 to_positive_angle = np.vectorize(_to_positive_angle)
-def get_next_point(x_vec, y_vec, index, angle, relative_interpolation_lenght=0.3 ):
+def get_next_point(x_vec, y_vec, index, angle, relative_interpolation_length=0.3 ):
     mp1_vec =  np.cos(angle) * x_vec  + np.sin(angle) * y_vec
     mp2_vec = -np.sin(angle) * x_vec  + np.cos(angle) * y_vec
     angles = xy_to_phi( mp1_vec-mp1_vec[index],mp2_vec-mp2_vec[index] )
     diffs  = np.sqrt(  (mp1_vec-mp1_vec[index])**2 + (mp2_vec-mp2_vec[index])**2 )
     for i, d in enumerate(diffs):
-        if d>relative_interpolation_lenght                           or d<0.001:
-        #if d>relative_interpolation_lenght/(0.001+np.sin(angles[i])) or d<0.001:
+        if d>relative_interpolation_length                           or d<0.001:
+        #if d>relative_interpolation_length/(0.001+np.sin(angles[i])) or d<0.001:
             angles[i] = 100
     new_index = np.argmin(angles)
     new_angle = xy_to_phi( x_vec[new_index]-x_vec[index],y_vec[new_index]-y_vec[index] )
     return new_index, to_positive_angle(new_angle - math.pi*4./8)
-def get_contour( x_vec, y_vec,  relative_interpolation_lenght=0.3 ):
+def get_contour( x_vec, y_vec,  relative_interpolation_length=0.3 ):
     p1_vec = ( x_vec - np.amin(x_vec) )/(np.amax(x_vec)-np.amin(x_vec))
     p2_vec = ( y_vec - np.amin(y_vec) )/(np.amax(y_vec)-np.amin(y_vec))
     boarder_points = []
@@ -223,7 +225,7 @@ def get_contour( x_vec, y_vec,  relative_interpolation_lenght=0.3 ):
     current_angel = 0
     n = 100
     for i in range(n):
-        i,current_angel = get_next_point(p1_vec, p2_vec, boarder_points[-1], current_angel, relative_interpolation_lenght)
+        i,current_angel = get_next_point(p1_vec, p2_vec, boarder_points[-1], current_angel, relative_interpolation_length)
         #print(i)
         if i in boarder_points:
             boarder_points.append(i)
@@ -301,30 +303,33 @@ def draw_cluster_contour( fig, plot, vector_chi2, matrix_parameter, **kwargs ):
         kwargs['lw'] = 1
     if not 'zorder' in kwargs:
         kwargs['zorder'] = 1
+    if not 'draw_sigmas' in kwargs:
+        kwargs['draw_sigmas'] = [1,2,3]
+    if not 'relative_interpolation_length' in kwargs:
+        kwargs['relative_interpolation_length'] = 0.3
 
-    if not 'relative_interpolation_lenght' in kwargs:
-        kwargs['relative_interpolation_lenght'] = 0.3
-
+    if 'relative_interpolation_length' in kwargs:
+        kwargs['relative_interpolation_length'] = kwargs['relative_interpolation_length']
     # implemennt cluster finder (optional)
     
-    if ind_1s_2D>10:
-        x_1s, y_1s, _ = get_contour(matrix_parameter[:ind_1s_2D, 0], matrix_parameter[:ind_1s_2D, 1],relative_interpolation_lenght=kwargs['relative_interpolation_lenght'])
+    if ind_1s_2D>10 and 1 in kwargs['draw_sigmas']:
+        x_1s, y_1s, _ = get_contour(matrix_parameter[:ind_1s_2D, 0], matrix_parameter[:ind_1s_2D, 1],relative_interpolation_length=kwargs['relative_interpolation_length'])
         patch1 = patches.PathPatch(xy_to_path(x_1s[:-1], y_1s[:-1]), facecolor=kwargs['colors'][0], lw=0, alpha=kwargs['alpha'], zorder=kwargs['zorder'] )
         plot.plot( x_1s, y_1s, color=kwargs['ec'], lw=kwargs['lw'], zorder=(kwargs['zorder']+100) )
-    if ind_2s_2D>10:
-        x_2s, y_2s, _ = get_contour(matrix_parameter[:ind_2s_2D, 0], matrix_parameter[:ind_2s_2D, 1],relative_interpolation_lenght=kwargs['relative_interpolation_lenght'])
+    if ind_2s_2D>10 and 2 in kwargs['draw_sigmas']:
+        x_2s, y_2s, _ = get_contour(matrix_parameter[:ind_2s_2D, 0], matrix_parameter[:ind_2s_2D, 1],relative_interpolation_length=kwargs['relative_interpolation_length'])
         patch2 = patches.PathPatch(xy_to_path(x_2s[:-1], y_2s[:-1]), facecolor=kwargs['colors'][1], lw=0, alpha=kwargs['alpha'], zorder=kwargs['zorder']  )
         plot.plot( x_2s, y_2s, color=kwargs['ec'], lw=kwargs['lw'], zorder=(kwargs['zorder']+100) )
-    if ind_3s_2D>10:
-        x_3s, y_3s, _ = get_contour(matrix_parameter[:ind_3s_2D, 0], matrix_parameter[:ind_3s_2D, 1],relative_interpolation_lenght=kwargs['relative_interpolation_lenght'])
+    if ind_3s_2D>10 and 3 in kwargs['draw_sigmas']:
+        x_3s, y_3s, _ = get_contour(matrix_parameter[:ind_3s_2D, 0], matrix_parameter[:ind_3s_2D, 1],relative_interpolation_length=kwargs['relative_interpolation_length'])
         patch3 = patches.PathPatch(xy_to_path(x_3s[:-1], y_3s[:-1]), facecolor=kwargs['colors'][2], lw=0, alpha=kwargs['alpha'], zorder=kwargs['zorder'] )
         plot.plot( x_3s, y_3s, color=kwargs['ec'], lw=kwargs['lw'], zorder=(kwargs['zorder']+100) )
 
-    if ind_3s_2D>10:
+    if ind_3s_2D>10 and 3 in kwargs['draw_sigmas']:
         plot.add_patch(patch3)
-    if ind_2s_2D>10:
+    if ind_2s_2D>10 and 2 in kwargs['draw_sigmas']:
         plot.add_patch(patch2)
-    if ind_1s_2D>10:
+    if ind_1s_2D>10 and 1 in kwargs['draw_sigmas']:
         plot.add_patch(patch1)
 
 
@@ -387,6 +392,7 @@ def draw_scatter_1to3sigma( fig, plot, vector_chi2, matrix_parameter, **kwargs )
     alpha  = 1.0
     zorder = 1
     kwargs_forward = {}
+    draw_sigmas = [1,2,3]
     for key in kwargs:
         if   key=='s':
             s = kwargs[key]
@@ -400,6 +406,8 @@ def draw_scatter_1to3sigma( fig, plot, vector_chi2, matrix_parameter, **kwargs )
             zorder = kwargs[key]
         elif key=='vector_positions':
             continue
+        elif key=='draw_sigmas':
+            draw_sigmas = kwargs[key]
         else:
             kwargs_forward[key] = kwargs[key]
     #
@@ -421,10 +429,138 @@ def draw_scatter_1to3sigma( fig, plot, vector_chi2, matrix_parameter, **kwargs )
         else:
             break
 
-    plot.scatter( matrix_parameter[ind_2s_2D:ind_3s_2D,0],matrix_parameter[ind_2s_2D:ind_3s_2D,1], c=colors[2], lw=lw, s=s, zorder=zorder, **kwargs_forward )
-    plot.scatter( matrix_parameter[ind_1s_2D:ind_2s_2D,0],matrix_parameter[ind_1s_2D:ind_2s_2D,1], c=colors[1], lw=lw, s=s, zorder=zorder, **kwargs_forward )
-    plot.scatter( matrix_parameter[         :ind_1s_2D,0],matrix_parameter[         :ind_1s_2D,1], c=colors[0], lw=lw, s=s, zorder=zorder, **kwargs_forward )
+    if 3 in draw_sigmas:
+        plot.scatter( matrix_parameter[ind_2s_2D:ind_3s_2D,0],matrix_parameter[ind_2s_2D:ind_3s_2D,1], c=colors[2], lw=lw, s=s, zorder=zorder, **kwargs_forward )
+    if 2 in draw_sigmas:
+        plot.scatter( matrix_parameter[ind_1s_2D:ind_2s_2D,0],matrix_parameter[ind_1s_2D:ind_2s_2D,1], c=colors[1], lw=lw, s=s, zorder=zorder, **kwargs_forward )
+    if 1 in draw_sigmas:
+        plot.scatter( matrix_parameter[         :ind_1s_2D,0],matrix_parameter[         :ind_1s_2D,1], c=colors[0], lw=lw, s=s, zorder=zorder, **kwargs_forward )
 
+####
+
+def draw_square_conv_contour( fig, plot, vector_chi2, matrix_parameter, **kwargs ):
+    ind_1s_2D = 1
+    ind_2s_2D = 1
+    ind_3s_2D = 1
+    ind_30    = 1
+    chi2_min = vector_chi2[0]
+    for i, chi2 in enumerate(vector_chi2):
+        if   chi2-chi2_min < 2.3:
+            ind_1s_2D = i+1
+            ind_2s_2D = i+1
+            ind_3s_2D = i+1
+            ind_30    = i+1
+        elif chi2-chi2_min < 6.18:
+            ind_2s_2D = i+1
+            ind_3s_2D = i+1
+            ind_30    = i+1
+        elif chi2-chi2_min < 11.83:
+            ind_3s_2D = i+1
+            ind_30    = i+1
+        elif chi2-chi2_min < 30.:
+            ind_30    = i+1
+        else:
+            break
+    if not 'N_grid' in kwargs:
+        kwargs['N_grid'] = 30
+    if not 's_conv' in kwargs:
+        kwargs['s_conv'] = 3
+    
+
+    if not 'colors' in kwargs:
+        kwargs['colors'] = colors_blue
+    if not 'alpha' in kwargs:
+        kwargs['alpha'] = 1.0
+    if not 'ec'     in kwargs:
+        kwargs['ec'] = 'black'
+    if not 'lw' in kwargs:
+        kwargs['lw'] = 1
+    if not 'zorder' in kwargs:
+        kwargs['zorder'] = 1
+    if not 'draw_sigmas' in kwargs:
+        kwargs['draw_sigmas'] = [1,2,3]
+    if not 'relative_interpolation_length' in kwargs:
+        kwargs['relative_interpolation_length'] = 0.3
+    
+    if 'relative_interpolation_length' in kwargs:
+        kwargs['relative_interpolation_length'] = kwargs['relative_interpolation_length']
+
+
+    N = kwargs['N_grid']
+    s = kwargs['s_conv']
+
+    vec_chi2 = vector_chi2[:ind_30]
+
+    vec_p1 = matrix_parameter[:ind_30,0]
+    vec_p2 = matrix_parameter[:ind_30,1]
+
+
+    p1_min = np.amin( vec_p1 )
+    p2_min = np.amin( vec_p2 )
+    p1_max = np.amax( vec_p1 )
+    p2_max = np.amax( vec_p2 )
+
+    d_p1   = (p1_max - p1_min)
+    d_p2   = (p2_max - p2_min)
+
+    chi2_prof_2D = np.ones( (N,N) ) * 2 * np.amax(vec_chi2)
+
+    for i,chi2 in enumerate( vec_chi2 ):
+
+        p1 = vec_p1[i]
+        p2 = vec_p2[i]
+
+        i1 = int(  N*0.999*(p1-p1_min)/d_p1  )
+        i2 = int(  N*0.999*(p2-p2_min)/d_p2  )
+
+        if chi2 < chi2_prof_2D[i1,i2]:
+            chi2_prof_2D[i1,i2] = chi2
+
+
+
+
+
+    N_conv = 2*s+1
+    m = int(N_conv/2)
+    conv = np.ones( (N_conv,N_conv) )
+    conv = conv/conv.sum()
+
+
+    #plot, fig = pf.new_plot(r'$i$', r'$j$', 'linear', 'linear', label_size=15)
+    #plt.subplots_adjust(left=0.15, right=0.75, top=0.9, bottom=0.15)
+    #
+    #x = np.linspace( p1_min, p1_max, N+1 )
+    #y = np.linspace( p2_min, p2_max, N+1 )
+    z = signal.convolve2d(chi2_prof_2D, conv, 'same')
+
+    # correct boundary:
+    n_x = len(z[:,0])
+    n_y = len(z[0,:])
+    for i in range(n_x):
+        for j in range(n_y):
+            outside_x = 0
+            outside_y = 0
+            if i<=s:
+                outside_x += N_conv * (s-i)
+            if i>=n_x-s:
+                outside_x += N_conv * (s+1+i-n_x)
+            if j<=s:
+                outside_y += N_conv * (s-j)
+            if j>=n_y-s:
+                outside_y += N_conv * (s+1+j-n_y)
+            outside = outside_x + outside_y - outside_x*outside_y/N_conv**2
+            
+            z[i,j] = z[i,j]*N_conv**2/(N_conv**2-outside)
+
+
+    x = np.linspace( p1_min+d_p1/2/N, p1_max-+d_p1/2/N, N )
+    y = np.linspace( p2_min+d_p2/2/N, p2_max-+d_p2/2/N, N )
+    chi2min = np.amin(z)
+    plot.contourf( x, y, z.transpose(), levels = [0, chi2min+2.3, chi2min+6.8, chi2min+11.2], colors=kwargs['colors'],    alpha=kwargs['alpha'], zorder=kwargs['zorder'] )
+    plot.contour ( x, y, z.transpose(), levels = [   chi2min+2.3, chi2min+6.8, chi2min+11.2], colors=kwargs['colors'][1], alpha=kwargs['alpha'], zorder=kwargs['zorder']+100, linewidths=kwargs['lw'] )
+
+
+#######
 
 def draw_contour_2D_1to3sigma_adaptive_grid( fig, plot, vector_chi2, matrix_parameter, **kwargs ):
     plot.set_xlim(  ( np.amin(matrix_parameter[:,0]),np.amax(matrix_parameter[:,0]) )  )
