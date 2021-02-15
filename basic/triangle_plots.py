@@ -15,7 +15,12 @@ from    matplotlib              import  rc
 
 fontset='dejavuserif'
 
-def prepare_triangle(npar, label_size=None, print_size=15, **kwargs):
+def prepare_triangle(npar, label_size=None, print_size=None, **kwargs):
+  
+    if print_size is None:
+        print_size = 15
+        if npar>10:
+            print_size = int( 15./10*npar )
     #
     if label_size==None:
         label_size = int(2*print_size/np.sqrt(npar))
@@ -247,6 +252,7 @@ def draw_diagonal( fig, plotArray, draw_function, vector_chi2, matrix_parameter,
     # Loop diagonal :                           #
     #    - plot on diagonal                     #
     # * * * * * * * * * * * * * * * * * * * * * #
+    ret = []
     for i in range(0, len(vector_positions)):
         if vector_positions[i]<0:
             continue
@@ -254,8 +260,8 @@ def draw_diagonal( fig, plotArray, draw_function, vector_chi2, matrix_parameter,
         iP = i #-1
         jP = i
         plotArray[iP][jP].axis('on')
-        draw_function(fig, plotArray[iP][jP], vector_chi2, matrix_parameter[:,vector_positions[i]], **kwargs_draw_function)
-
+        ret.append( draw_function(fig, plotArray[iP][jP], vector_chi2, matrix_parameter[:,vector_positions[i]], **kwargs_draw_function) )
+    return ret
 
 from   numpy import linalg as LA
 # 1 sigma contour of a cov matrix V
