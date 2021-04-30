@@ -370,9 +370,9 @@ def draw_cluster_contour( fig, plot, vector_chi2, matrix_parameter, **kwargs ):
             plot.plot( x_1s, y_1s, color=kwargs['ec'], lw=kwargs['lw'], zorder=(kwargs['zorder']+100) )
     if ind_2s_2D>10 and 2 in kwargs['draw_sigmas']:
         c_ind = 1
-        if len(kwargs['draw_sigmas']) == 2:
-            if draw_sigmas[0] == 1 and draw_sigmas[1] == 2:
-                c_ind = 2
+#        if len(kwargs['draw_sigmas']) == 2:
+#            if draw_sigmas[0] == 1 and draw_sigmas[1] == 2:
+#                c_ind = 2
         
         x_2s, y_2s, _ = get_contour(matrix_parameter[:ind_2s_2D, 0], matrix_parameter[:ind_2s_2D, 1],relative_interpolation_length=relative_interpolation_length[1], min_dist=min_dist[1])
         #######
@@ -393,7 +393,7 @@ def draw_cluster_contour( fig, plot, vector_chi2, matrix_parameter, **kwargs ):
         if draw_edge:
             plot.plot( x_2s, y_2s, color=kwargs['ec'], lw=kwargs['lw'], zorder=(kwargs['zorder']+100) )
     if ind_3s_2D>10 and 3 in kwargs['draw_sigmas']:
-        x_3s, y_3s, _ = get_contour(matrix_parameter[:ind_3s_2D, 0], matrix_parameter[:ind_3s_2D, 1],relative_interpolation_length=relative_interpolation_length[2], min_dist=min_dist[2])
+        x_3s, y_3s, _ = get_contour(matrix_parameter[:ind_3s_2D, 0], matrix_parameter[:ind_3s_2D,1],relative_interpolation_length=relative_interpolation_length[2], min_dist=min_dist[2])
         #######
         #######
         if smoothing>0:
@@ -578,8 +578,6 @@ def draw_square_conv_contour( fig, plot, vector_chi2, matrix_parameter, **kwargs
     N = kwargs['N_grid']
     s = kwargs['s_conv']
 
-    print(N)
-    print(s)
 
     vec_chi2 = vector_chi2[:ind_30]
 
@@ -666,7 +664,7 @@ def draw_square_conv_contour( fig, plot, vector_chi2, matrix_parameter, **kwargs
     if len( ds_c ) == 1:
         colors = [ colors[0] ]
     if len( ds_c ) == 2:
-        colors = [ colors[0], colors[2] ]
+        colors = [ colors[0], colors[1] ]
 
     plot.contourf( x, y, z.transpose(), levels = levels_cf, colors=colors,     alpha=kwargs['alpha'], zorder=kwargs['zorder'] )
     #plot.contour ( x, y, z.transpose(), levels = levels_c , colors=color_line, alpha=kwargs['alpha'], zorder=kwargs['zorder']+100, linewidths=kwargs['lw'] )
@@ -839,6 +837,10 @@ def draw_histogram_1D(fig, plot, vector_chi2, vector_parameter, **kwargs):
 
     return [p_from, p_to]
 
+def helper_get_bestfit_and_uncertainty( x1, y1, x2, y2, ylim ):
+    m = (y2-y1)/(x2-x1)
+    b = y1 - m * x1
+    return (ylim-b)/m
 
 def get_bestfit_and_uncertainty(vector_chi2, vector_parameter, sigma=1):
     # Get min chiSq
@@ -864,23 +866,72 @@ def get_bestfit_and_uncertainty(vector_chi2, vector_parameter, sigma=1):
 
     p_le   = p_l
     p_ue   = p_u
+    #print( '   p_best : %.10f' % p_best )
+    #print( '   p_le   : %.10f' % p_le )
+    #print( '   p_ue   : %.10f' % p_ue )
     for i in sorted:
-        if vector_chi2[i] - chi2_best > (sigma+1)**2:
+        if vector_chi2[i] - chi2_best > (sigma+2)**2:
             break
-        if p_l > vector_parameter[i]:
-            m_l  = ( chi_l - vector_chi2[i] )/(p_l - vector_parameter[i])
-            b_l  = ( chi_l * vector_parameter[i] - vector_chi2[i] * p_l )/(vector_parameter[i] - p_l)
-            p_ll = ( chi2_best + sigma**2 - b_l )/m_l
-            p_le = np.minimum(p_ll, p_le)
-        if p_u < vector_parameter[i]:
-            m_u  = ( chi_u - vector_chi2[i] )/(p_u - vector_parameter[i])
-            b_u  = ( chi_u * vector_parameter[i] - vector_chi2[i] * p_u )/(vector_parameter[i] - p_u)
-            p_uu = ( chi2_best + sigma**2 - b_u )/m_u
-            p_ue = np.maximum(p_uu, p_ue)
-
-    p_ue = np.minimum(np.amax(vector_parameter), p_ue)
-    p_le = np.maximum(np.amin(vector_parameter), p_le)
+#        if p_l > vector_parameter[i]:
+#            m_l  = ( chi_l - vector_chi2[i] )/(p_l - vector_parameter[i])
+#            b_l  = ( chi_l * vector_parameter[i] - vector_chi2[i] * p_l )/(vector_parameter[i] - p_l)
+#            p_ll = ( chi2_best + sigma**2 - b_l )/m_l
+#            p_le = np.minimum(p_ll, p_le)
+#            print( '   p_ll   : %.10f' % p_ll )
+#
+#        if p_u < vector_parameter[i]:
+#            m_u  = ( chi_u - vector_chi2[i] )/(p_u - vector_parameter[i])
+#            b_u  = ( chi_u * vector_parameter[i] - vector_chi2[i] * p_u )/(vector_parameter[i] - p_u)
+#            p_uu = ( chi2_best + sigma**2 - b_u )/m_u
+#            p_ue = np.maximum(p_uu, p_ue)
+#            print( '   p_uu   : %.10f' % p_uu )
+        if  vector_parameter[i] < p_le:
+            p_test = helper_get_bestfit_and_uncertainty( x1=vector_parameter[i],
+                                                         y1=vector_chi2[i],
+                                                         x2=p_l,
+                                                         y2=chi_l,
+                                                         ylim=(chi2_best+sigma**2) )
+            p_le = np.minimum( p_test, p_le )
+        if vector_parameter[i] > p_ue:
+            p_test = helper_get_bestfit_and_uncertainty( x1=vector_parameter[i],
+                                                         y1=vector_chi2[i],
+                                                         x2=p_u,
+                                                         y2=chi_u,
+                                                         ylim=(chi2_best+sigma**2) )
+            p_ue = np.maximum( p_test, p_ue )
+            p_le = np.minimum( p_test, p_le )
+            
+        if vector_parameter[i] > p_ue or vector_parameter[i] < p_le:
+            p_test = helper_get_bestfit_and_uncertainty( x1=vector_parameter[i],
+                                                         y1=vector_chi2[i],
+                                                         x2=p_best,
+                                                         y2=chi2_best,
+                                                         ylim=(chi2_best+sigma**2) )
+            p_ue = np.maximum( p_test, p_ue )
+            p_le = np.minimum( p_test, p_le )
+            
+            
+#    for i in sorted:
+#        if vector_chi2[i] - chi2_best > (sigma+1)**2:
+#            break
+#        if p_l > vector_parameter[i]:
+#            m_l  = ( chi2_best - vector_chi2[i] )/(p_best - vector_parameter[i])
+#            b_l  = ( chi2_best * vector_parameter[i] - vector_chi2[i] * p_best )/(vector_parameter[i] - p_best)
+#            p_ll = ( chi2_best + sigma**2 - b_l )/m_l
+#            p_le = np.minimum(p_ll, p_le)
+#            print( '   p_uu   : %.10f' % p_ll )
+#        if p_u < vector_parameter[i]:
+#            m_u  = ( chi2_best - vector_chi2[i] )/(p_best - vector_parameter[i])
+#            b_u  = ( chi2_best * vector_parameter[i] - vector_chi2[i] * p_best )/(vector_parameter[i] - p_best)
+#            p_uu = ( chi2_best + sigma**2 - b_u )/m_u
+#            p_ue = np.maximum(p_uu, p_ue)
+#            print( '   p_uu   : %.10f' % p_uu )
+#
+#    p_ue = np.minimum(np.amax(vector_parameter), p_ue)
+#    p_le = np.maximum(np.amin(vector_parameter), p_le)
 #    print( '%8.2e  +%8.2e   -%8.2e'      % ( p_best, p_u-p_best,  p_best-p_l  )  )
 #    print( '%8.2e  +%8.2e   -%8.2e  <--' % ( p_best, p_ue-p_best, p_best-p_le )  )
 #    sys.exit(0)
+#    print( '   p_ue   : %.10f' % p_ue )
+#    print( '   p_le   : %.10f' % p_le )
     return p_best, p_ue-p_best, p_best-p_le

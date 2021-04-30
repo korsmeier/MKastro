@@ -218,6 +218,20 @@ def set_triangle_scales( fig, plotArray, scales, **kwargs ):
         #print(major_y)
         for i in range(0, npar):
             aax2[i][i].yaxis.set_ticks( major_y )
+    
+    for i in range(0, npar):
+        for j in range(0, i+1):
+            iP = i
+            jP = j
+            if scales[j]=='log':
+                aax2[iP][jP].set_xlim( np.power(10, np.array(plotArray[iP][jP].get_xlim())) )
+            else:
+                aax2[iP][jP].set_xlim( plotArray[iP][jP].get_xlim() )
+            if iP!=jP:
+                if scales[i]=='log':
+                    aax2[iP][jP].set_ylim( np.power(10, np.array(plotArray[iP][jP].get_ylim())) )
+                else:
+                    aax2[iP][jP].set_ylim( plotArray[iP][jP].get_ylim() )
     return aax2
 
 

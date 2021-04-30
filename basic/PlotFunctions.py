@@ -39,6 +39,47 @@ def new_plot( xlabel, ylabel, xscale='linear', yscale='linear', print_size=10, l
     
     return plot, fig
 
+def new_plot_ny( xlabel, ylabel, n_y,  xscale='linear', yscale='linear', print_size=3, label_size=25, sizex=4.0, sizey=3.0):
+  
+    plt.close('all')
+    mpl.rcParams['axes.linewidth'] = 1.5
+
+    fig     = plt.figure(figsize=(print_size*sizex, print_size*sizey))
+    plot    = []
+    h = 0.75/n_y
+    for i in range(n_y):
+        plot.append(  fig.add_axes( ( 0.2, 0.15+i*h, 0.7, h ) )  )
+                
+        plot[i].set_xscale ( xscale )
+        plot[i].set_yscale ( yscale )
+
+        plot[i].tick_params('both', length=8, width=1.5, which='major', top=True, right=True, direction='in', pad=10, labelsize=label_size )
+        plot[i].tick_params('both', length=4, width=1.5, which='minor', top=True, right=True, direction='in', pad=10, labelsize=label_size )
+    
+        if i>0:
+            plt.setp( plot[i].get_xticklabels(), visible=False )
+        
+        plot[i].set_ylabel ( ylabel, fontsize=label_size )
+
+    plot[ 0         ].set_xlabel ( xlabel, fontsize=label_size )
+    return plot, fig
+
+
+
+def new_empty_plot( print_size=10, label_size=25, sizex=1.0, sizey=0.75 ):
+    
+    plt.close('all')
+    font_props = {"size":label_size}
+    rc("font", **font_props)
+    mpl.rcParams['axes.linewidth'] = 2
+    mpl.rcParams['mathtext.fontset']=fontset #fontset
+    
+    fig     = plt.figure(figsize=(print_size*sizex, print_size*sizey))
+    plot    = plt.subplot2grid((1, 1), (0, 0), rowspan=1)
+    
+    return plot, fig
+
+
 
 
 def new_plot_res( xlabel='', ylabel='', xscale='log', yscale='log', print_size=10, label_size=25, sizex=1.0, sizey=1.0):

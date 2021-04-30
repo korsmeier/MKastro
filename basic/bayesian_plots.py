@@ -126,6 +126,7 @@ def draw_likelihood_2D( fig, plot, vector_weights, matrix_parameter, ranges=[], 
         Ls *= 1./(2*math.pi*sigma_i**2)
         L = Ls
     #
+    #print(L.sum())
     L /= L.sum()
     #
     # get levels:
@@ -153,8 +154,20 @@ def draw_likelihood_2D( fig, plot, vector_weights, matrix_parameter, ranges=[], 
         kwargs['lw'] = 1
     if not 'zorder' in kwargs:
         kwargs['zorder'] = 1
+        
+    if 'draw_sigmas' in kwargs:
+        ds = kwargs['draw_sigmas']
+        if len(ds)==2:
+            if ds[0]==1 and ds[1]==2:
+                levels = np.array(levels)
+                #print(levels)
+                kwargs['colors'] = kwargs['colors'][:2]
+                levels = levels[ [0,2,3,4] ]
+                #print(levels)
+                
     #
     if 'contour'  in draw:
+        #print(kwargs['ec'])
         plot.contour(m_x[:-1,:-1]+dx/2., m_y[:-1,:-1]+dy/2., L, levels[1:-1], colors=kwargs['ec'], linewidths=kwargs['lw'], zorder=10+kwargs['zorder']   )
         #cs = plot.contour(m_x[:-1,:-1]+dx/2., m_y[:-1,:-1]+dy/2., L, levels[1:-1], alpha=0. )
         #for col in cs.collections:
@@ -164,6 +177,7 @@ def draw_likelihood_2D( fig, plot, vector_weights, matrix_parameter, ranges=[], 
         #    y = v[:,1]
         #    plot.plot( x, y, color=kwargs['ec'], lw=kwargs['lw'], zorder=10+kwargs['zorder']  )
     if 'contourf' in draw:
+        #print(kwargs['alpha'])
         plot.contourf(m_x[:-1,:-1]+dx/2., m_y[:-1,:-1]+dy/2., L, levels[1:], colors=(kwargs['colors'])[::-1], alpha=kwargs['alpha'], zorder=kwargs['zorder'] )
     if 'likelihood' in draw:
         cmap = plt.get_cmap(cmap)
