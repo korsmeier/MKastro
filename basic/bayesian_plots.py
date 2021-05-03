@@ -89,7 +89,7 @@ def draw_baysian_model( fig, plot, x, y_equal_weights,
                 p.vertices[:,1] = np.power(10, p.vertices[:,1]+y_mean_iterp )
             else:
                 p.vertices[:,1] = p.vertices[:,1]+y_mean_iterp
-        patch = patches.PathPatch(p, facecolor=color, lw=0, alpha=alpha)
+        patch = mpatches.PathPatch(p, facecolor=color, lw=0, alpha=alpha)
         plot.add_patch(patch)
     
     return y_plot, pathes
