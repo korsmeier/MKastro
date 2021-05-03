@@ -8,6 +8,92 @@ import  matplotlib.patches      as      mpatches
 from    matplotlib.patches      import  Rectangle
 
 
+def draw_baysian_model( fig, plot, x, y_equal_weights,
+                       n_bins=150,
+                       sigma_rel=0.05,
+                       xscale='linear',
+                       yscale='linear',
+                       color='blue',
+                       alpha=0.4,
+                       lw=2,
+                       label='',
+                       CL=0.3183
+                      ):
+
+    if xscale=='log':
+        x_norm = np.log10(x)
+    else:
+        x_norm = np.copy(x)
+
+    if yscale=='log':
+        y_norm = np.log10(y_equal_weights)
+    else:
+        y_norm = np.copy(y_equal_weights)
+
+    y_mean  = np.mean(y_norm, axis=0)
+    y_norm -= y_mean
+
+    bins      = np.linspace(np.amin(y_norm),np.amax(y_norm),n_bins+1)
+    bin_means = (bins[:-1] + bins[1:])/2.
+    sigma_n   = int(n_bins*sigma_rel)
+
+    z    = np.zeros( (len(x_norm),n_bins) )
+    
+
+    for i,_x in enumerate(x_norm):
+        hist, _ = np.histogram( y_norm[:,i], bins=bins )
+        z[i,:] = hist/len( y_norm[:,0] )
+
+    if sigma_n>1:
+        z_sm  = np.zeros(np.shape(z))
+        z_ext = np.zeros( (len(z[:,0]), len(z[0,:])+4*sigma_n) )
+        z_ext[:,2*sigma_n:-2*sigma_n] = z
+
+        for i in range(4*sigma_n):
+            z_sm += z_ext[:,i:-(4*sigma_n-i)] * np.exp( -0.5 * ((2*sigma_n-i)/sigma_n)**2 )
+    else:
+        z_sm = z
+    
+    for i,_x in enumerate(x_norm):
+        s = np.sum( z_sm[i,:] )
+        c = 0
+        for _z in np.sort(z_sm[i,:]):
+            c += _z/s
+            if c > 1-CL:
+                z_sm[i,:] /= _z
+                break
+    
+    temp = fig.add_axes([0.5, 1, 0.5, 1])
+    cl1 = temp.contourf( x_norm, bin_means, z_sm.transpose(), levels=[1., 10000.], alpha=1.0 )
+    pathes = cl1.collections[0].get_paths()
+    temp.remove()
+
+    if yscale=='log':
+        y_plot = np.power(10,y_mean)
+    else:
+        y_plot = np.copy(y_mean)
+    
+    plot.plot( x, y_plot , color=color, lw=2, label=label )
+
+    for i,p in enumerate(pathes):
+        y_mean_iterp = np.interp( p.vertices[:,0], x_norm, y_mean )
+        if xscale=='log':
+            if yscale=='log':
+                p.vertices[:,0] = np.power(10, p.vertices[:,0])
+                p.vertices[:,1] = np.power(10, p.vertices[:,1]+y_mean_iterp )
+            else:
+                p.vertices[:,0] = np.power(10, p.vertices[:,0])
+                p.vertices[:,1] = p.vertices[:,1]+y_mean_iterp
+        else:
+            if yscale=='log':
+                p.vertices[:,1] = np.power(10, p.vertices[:,1]+y_mean_iterp )
+            else:
+                p.vertices[:,1] = p.vertices[:,1]+y_mean_iterp
+        patch = patches.PathPatch(p, facecolor=color, lw=0, alpha=alpha)
+        plot.add_patch(patch)
+    
+    return y_plot, pathes
+
 def get_bayes_in_adaptive_grid( vec_x, vec_y, vec_weight, range_x=None, range_y=None, r=0, r_max=6, r_min=3, min_Npoints=15):
     if range_x==None:
         range_x = [np.amin(vec_x), np.amax(vec_x) ]
