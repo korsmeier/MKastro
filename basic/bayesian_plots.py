@@ -8,7 +8,7 @@ import  matplotlib.patches      as      mpatches
 from    matplotlib.patches      import  Rectangle
 
 
-def draw_baysian_model( fig, plot, x, y_equal_weights,
+def draw_bayesian_model( fig, plot, x, y_equal_weights,
                        n_bins=150,
                        sigma_rel=0.05,
                        xscale='linear',
@@ -17,7 +17,7 @@ def draw_baysian_model( fig, plot, x, y_equal_weights,
                        alpha=0.4,
                        lw=2,
                        label='',
-                       CL=0.3183
+                       CL=0.6827
                       ):
 
     if xscale=='log':
