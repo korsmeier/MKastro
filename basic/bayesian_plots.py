@@ -7,8 +7,51 @@ import  matplotlib.pyplot       as      plt
 import  matplotlib.patches      as      mpatches
 from    matplotlib.patches      import  Rectangle
 
-
 def draw_bayesian_model( fig, plot, x, y_equal_weights,
+                       yscale='linear',
+                       color='blue',
+                       alpha=0.4,
+                       lw=2,
+                       label='',
+                       CL=0.6827
+                      ):
+    # This function draws the smallest contious uncertainty band
+
+    N = len(y_equal_weights[:,0])
+    n = int(N*CL)
+    ym = []
+    yl = []
+    yu = []
+    
+    for i in range(len(x)):
+        if yscale=='log':
+            y     = np.log(y_equal_weights[:,i])
+        else:
+            y     = y_equal_weights[:,i]
+        
+        ind   = np.argsort( y )
+        ys    = y[ind]
+        diffs = ys[n:]-ys[:-n]
+        m     = np.argmin(diffs)
+        yl.append( ys[m  ] )
+        yu.append( ys[m+n] )
+        ym.append( np.mean(y) )
+
+    ym = np.array( ym )
+    yl = np.array( yl )
+    yu = np.array( yu )
+    
+    if yscale=='log':
+        yl = np.exp( yl )
+        yu = np.exp( yu )
+        ym = np.exp( ym )
+    
+    plot.plot        ( x, ym ,     color=color, lw=lw, label=label )
+    plot.fill_between( x, yl, yu , color=color, lw=0 , alpha=alpha )
+    
+    return ym, yl, yu
+
+def draw_bayesian_model_contour( fig, plot, x, y_equal_weights,
                        n_bins=150,
                        sigma_rel=0.05,
                        xscale='linear',
@@ -19,7 +62,11 @@ def draw_bayesian_model( fig, plot, x, y_equal_weights,
                        label='',
                        CL=0.6827
                       ):
-
+                      
+    # This function draws the smallest (also non-contious) uncertainty band
+    # Warning: function and smoothing might not be stable, in particular for
+    # large y-ranges.
+    
     if xscale=='log':
         x_norm = np.log10(x)
     else:
@@ -93,6 +140,8 @@ def draw_bayesian_model( fig, plot, x, y_equal_weights,
         plot.add_patch(patch)
     
     return y_plot, pathes
+
+
 
 def get_bayes_in_adaptive_grid( vec_x, vec_y, vec_weight, range_x=None, range_y=None, r=0, r_max=6, r_min=3, min_Npoints=15):
     if range_x==None:
