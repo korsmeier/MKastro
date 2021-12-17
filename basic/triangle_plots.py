@@ -127,7 +127,20 @@ def set_triangle_labels_and_ranges( plotArray, labels, ranges=[] ):
         #print(major_y)
         for i in range(0, npar):
             plotArray[i][i].yaxis.set_ticks( major_y )
-
+            
+def set_triangle_ticks( plotArray, ticks ):
+    npar = len(plotArray)
+    y_offset = 0
+    if len(ticks)==npar+1:
+        y_offset = +1
+    for i in range(0, npar):
+        for j in range(0, i+1):
+            iP = i
+            jP = j
+            if len(ticks):
+                plotArray[iP][jP].xaxis.set_ticks( ticks[j] )
+                if iP!=jP:
+                    plotArray[iP][jP].yaxis.set_ticks( ticks[i+y_offset] )
 
 def unify_ranges_from_diagonal( plotArray ):
     npar = len(plotArray)

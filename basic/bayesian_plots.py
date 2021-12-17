@@ -7,6 +7,34 @@ import  matplotlib.pyplot       as      plt
 import  matplotlib.patches      as      mpatches
 from    matplotlib.patches      import  Rectangle
 
+def get_bayesian_uncertainty( values_equal_weights,
+                       vscale='linear',
+                       CL=0.6827
+                      ):
+    N = len(values_equal_weights)
+    n = int(N*CL)
+    
+    if vscale=='log':
+        y     = np.log(values_equal_weights)
+    else:
+        y     = values_equal_weights
+
+    ind   = np.argsort( y )
+    ys    = y[ind]
+    diffs = ys[n:]-ys[:-n]
+    m     = np.argmin(diffs)
+    yl = ys[m  ]
+    yu = ys[m+n]
+    ym = np.mean(y)
+    
+    if vscale=='log':
+        yl = np.exp( yl )
+        yu = np.exp( yu )
+        ym = np.exp( ym )
+    
+    return ym, (yu-ym), (ym-yl)
+
+
 def draw_bayesian_model( fig, plot, x, y_equal_weights,
                        yscale='linear',
                        color='blue',

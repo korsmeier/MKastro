@@ -472,6 +472,21 @@ def draw_scatter( fig, plot, vector_chi2, matrix_parameter, **kwargs ):
     im = plot.scatter( matrix_parameter[::-1,0],matrix_parameter[::-1,1], c=vector_chi2[::-1], lw=lw, vmin=vector_chi2[0], vmax=vector_chi2[0]+range_delta_chi2, cmap=cmap, s=s, **kwargs_forward )
     return im 
 
+def draw_simple_scatter( fig, plot, vector_chi2, matrix_parameter, **kwargs ):
+    #lw=0
+    #s=5
+    #alpha  = 1.0
+    #c='blue'
+    kwargs_forward = {}
+    for key in kwargs:
+        if key=='vector_positions':
+            continue
+        kwargs_forward[key] = kwargs[key]
+    #print(kwargs_forward)
+    #print(matrix_parameter[:5,0],matrix_parameter[:5,1])
+    im = plot.scatter( matrix_parameter[::-1,0],matrix_parameter[::-1,1], **kwargs_forward )
+    return im
+
 def draw_scatter_1to3sigma( fig, plot, vector_chi2, matrix_parameter, **kwargs ):
     lw=0
     s=5
@@ -667,7 +682,8 @@ def draw_square_conv_contour( fig, plot, vector_chi2, matrix_parameter, **kwargs
         colors = [ colors[0], colors[1] ]
 
     plot.contourf( x, y, z.transpose(), levels = levels_cf, colors=colors,     alpha=kwargs['alpha'], zorder=kwargs['zorder'] )
-    #plot.contour ( x, y, z.transpose(), levels = levels_c , colors=color_line, alpha=kwargs['alpha'], zorder=kwargs['zorder']+100, linewidths=kwargs['lw'] )
+    if 'ec' in kwargs:
+        plot.contour ( x, y, z.transpose(), levels = levels_c , colors=color_line, alpha=kwargs['alpha'], zorder=kwargs['zorder']+100, linewidths=kwargs['lw']  )
 
 
 #######
@@ -773,6 +789,8 @@ def draw_histogram_1D(fig, plot, vector_chi2, vector_parameter, **kwargs):
         kwargs['plot_Delta_logLik'] = False
     if not 'smoothing' in kwargs:
         kwargs['smoothing'] = 0
+    if not 'extend' in kwargs:
+        kwargs['extend'] = False
     #
     p_from = np.amin(vector_parameter)
     p_to   = np.amax(vector_parameter)
@@ -825,6 +843,13 @@ def draw_histogram_1D(fig, plot, vector_chi2, vector_parameter, **kwargs):
         plot.plot(p_x,        p_y+d,         color=kwargs['color'], lw=1.5)
     elif kwargs['style'] == 'line':
         plot.plot(hist_means, hist_values+d, color=kwargs['color'], lw=1.5)
+        if kwargs['extend']:
+            #plot.plot( [hist_means[ 0]-p_step,hist_means[ 0]], [d+np.amin(hist_values)+2*kwargs['range_delta_chi2'],hist_values[ 0]+d], color=kwargs['color'], lw=1.5  )
+            #plot.plot( [hist_means[-1]+p_step,hist_means[-1]], [d+np.amin(hist_values)+2*kwargs['range_delta_chi2'],hist_values[-1]+d], color=kwargs['color'], lw=1.5  )
+            plot.plot( [hist_means[ 0]-p_step,hist_means[ 0]], [hist_values[ 0]+d + (hist_values[ 0]-hist_values[ 1]),hist_values[ 0]+d], color=kwargs['color'], lw=1.5  )
+            plot.plot( [hist_means[-1]+p_step,hist_means[-1]], [hist_values[-1]+d + (hist_values[-1]-hist_values[-2]),hist_values[-1]+d], color=kwargs['color'], lw=1.5  )
+            plot.plot( [hist_means[ 0]-2*p_step,hist_means[ 0]-p_step], [kwargs['range_delta_chi2'],hist_values[ 0]+d + (hist_values[ 0]-hist_values[ 1])], color=kwargs['color'], lw=1.5  )
+            plot.plot( [hist_means[-1]+2*p_step,hist_means[-1]+p_step], [kwargs['range_delta_chi2'],hist_values[-1]+d + (hist_values[-1]-hist_values[-2])], color=kwargs['color'], lw=1.5  )
     #plot.set_xlim( (p_from,p_to) )
     plot.set_ylim( (chi2_min+d,chi2_min+d+kwargs['range_delta_chi2']) )
 
