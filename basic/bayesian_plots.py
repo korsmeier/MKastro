@@ -34,6 +34,73 @@ def get_bayesian_uncertainty( values_equal_weights,
     
     return ym, (yu-ym), (ym-yl)
 
+def get_bayesian_uncertainty_with_weights( values, weights,
+                       vscale='linear',
+                       CL=0.6827
+                      ):
+    N = len(values)
+    
+    if vscale=='log':
+        y     = np.log(values)
+    else:
+        y     = values
+
+    ym = np.average(y, weights=weights)
+    
+    ind   = np.argsort( y )
+    y     = y[ind]
+    w     = weights[ind]
+    
+    i = 0
+    j = 0
+    interval = w[0]
+        
+    diff=1e90
+    yl, yu = -1, -1
+    
+    while interval<=CL:
+        j+=1
+        if j>=N:
+            break
+        interval += w[j]
+        
+    if interval>=CL:
+        d = y[j]-y[i]
+        if d<diff:
+            diff = d
+            yl = y[i]
+            yu = y[j]
+    
+    for i in range(1,N):
+        
+        interval -= w[i-1]
+        while interval<=CL:
+            j+=1
+            if j>=N:
+                break
+            interval += w[j]
+        
+        if interval>=CL:
+            d = y[j]-y[i]
+            if d<diff:
+                diff = d
+                yl = y[i]
+                yu = y[j]
+#                 print('---')
+#                 print(i,j,diff)
+#                 print(d)
+#                 print(yl)
+#                 print(yu)
+#                 print(interval)
+#                 print('---')
+    
+    if vscale=='log':
+        yl = np.exp( yl )
+        yu = np.exp( yu )
+        ym = np.exp( ym )
+    
+    return ym, (yu-ym), (ym-yl)
+
 
 def draw_bayesian_model( fig, plot, x, y_equal_weights,
                        yscale='linear',
@@ -74,8 +141,9 @@ def draw_bayesian_model( fig, plot, x, y_equal_weights,
         yu = np.exp( yu )
         ym = np.exp( ym )
     
-    plot.plot        ( x, ym ,     color=color, lw=lw, label=label )
-    plot.fill_between( x, yl, yu , color=color, lw=0 , alpha=alpha )
+    if plot is not None:
+        plot.plot        ( x, ym ,     color=color, lw=lw, label=label )
+        plot.fill_between( x, yl, yu , color=color, lw=0 , alpha=alpha )
     
     return ym, yl, yu
 
