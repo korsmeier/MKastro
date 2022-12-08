@@ -38,8 +38,8 @@ $ ln -s PATH_TO_THIS_DIR/py2 MKastro
 
 To include the package use for example
 
-import MKastro.basic.Constants.py
-import MKastro.basic.PlotFunctions.py
-import MKastro.basic.Transformation.py
+import MKastro.basic.Constants
+import MKastro.basic.PlotFunctions
+import MKastro.basic.Transformation
 
 
