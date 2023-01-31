@@ -74,7 +74,7 @@ def prepare_triangle(npar, label_size=None, print_size=None, **kwargs):
             #
             for tick in plotArray[iP][jP].get_xticklabels():
                 tick.set_rotation(90)
-                tick.set_horizontalalignment('right')
+                tick.set_horizontalalignment('center')
             plotArray[iP][jP].xaxis.set_major_locator(MaxNLocator(kwargs['max_n_locator']))
             plotArray[iP][jP].yaxis.set_major_locator(MaxNLocator(kwargs['max_n_locator']))
             plotArray[iP][jP].xaxis.set_tick_params(length=4, width=1, top=True, right=True, direction='in', pad=10)
